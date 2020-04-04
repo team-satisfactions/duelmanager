@@ -13,7 +13,7 @@ export default {
                 state.histories[player] = []
             });
         },
-        addHistory(state, {player, value}) {
+        addHistory(state, [player, value]) {
             state.histories[player].push({
                 value,
                 active: true,
