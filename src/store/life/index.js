@@ -1,3 +1,38 @@
-const state = {
+import { sum } from 'mathjs'
 
+export default {
+    state: {
+        histories: {},
+        players: [],
+    },
+    mutations: {
+        initialize2Players(state) {
+            state.players = ["player1", "player2"];
+            state.players.forEach((player) => {
+                state.histories[player] = []
+            });
+        },
+        addHistory(state, {player, value}) {
+            state.histories[player].push({
+                value,
+                active: true,
+            });
+        },
+    },
+    getters: {
+        life(state) {
+            return (player) => {
+                return sum(state.histories[player].filter((b) => {
+                    b.active
+                }).map((b) => b.value));
+            }
+        },
+        lifes(state, getters) {
+            let ret = {};
+            state.players.forEach((player) => {
+                ret[player] = getters.life(player)
+            });
+            return ret;
+        }
+    }
 }
