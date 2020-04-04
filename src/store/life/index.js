@@ -23,7 +23,7 @@ export default {
         life(state) {
             return (player) => {
                 return sum(state.histories[player].filter((b) => {
-                    b.active
+                    return b.active
                 }).map((b) => b.value));
             }
         },
