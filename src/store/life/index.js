@@ -12,7 +12,7 @@ export default {
                 state.histories[player] = []
             });
         },
-        addHistory(state, {player, value}) {
+        addHistory(state, [player, value]) {
             state.histories[player].push({
                 value,
                 active: true,
@@ -22,9 +22,7 @@ export default {
     getters: {
         life(state) {
             return (player) => {
-                return sum(state.histories[player].filter((b) => {
-                    b.active
-                }).map((b) => b.value));
+                return sum(state.histories[player].filter(b => b.active).map((b) => b.value));
             }
         },
         lifes(state, getters) {
