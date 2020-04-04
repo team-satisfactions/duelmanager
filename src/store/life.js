@@ -1,6 +1,7 @@
 import { sum } from 'mathjs'
 
 export default {
+    namespaced: true,
     state: {
         histories: {},
         players: [],
@@ -23,7 +24,7 @@ export default {
         life(state) {
             return (player) => {
                 return sum(state.histories[player].filter((b) => {
-                    b.active
+                    return b.active
                 }).map((b) => b.value));
             }
         },
