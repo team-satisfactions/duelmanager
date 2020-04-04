@@ -6,6 +6,7 @@ import {HistoryType} from "./types.js";
 let DEFAULT_START_LIFE_POINT = 8000;
 
 export default {
+    namespaced: true,
     state: {
         histories: {},
         players: [],

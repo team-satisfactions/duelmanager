@@ -1,7 +1,7 @@
 import Vuex from 'vuex';
-import life from '../../store/life';
+import life from '../../store/life.js';
 import { createLocalVue } from '@vue/test-utils';
-import {HistoryType} from "../../store/life/types.js";
+import {HistoryType} from "../../store/types.js";
 
 const localVue = createLocalVue();
 
