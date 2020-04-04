@@ -1,8 +1,11 @@
 <template>
   <div id="app">
     <img alt="Vue logo" src="./assets/logo.png">
-    <div style="display:flex;">
-      lifes:{{lifes}}
+    <div style="display:flex; justify-content: space-around;">
+      <div v-for="(life,player) in lifes" :key="player">
+        <h1 style="text-align:start">{{player}}</h1>
+        <div class="font-big">LP {{life}}</div>
+      </div>
     </div>
   </div>
 </template>
@@ -33,6 +36,9 @@ export default {
 </script>
 
 <style>
+.font-big {
+  font-size: 96px;
+}
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
