@@ -1,6 +1,7 @@
 import { sum } from 'mathjs'
 
 export default {
+    namespaced: true,
     state: {
         histories: {},
         players: [],
