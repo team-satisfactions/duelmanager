@@ -1,18 +1,34 @@
 <template>
   <div id="app">
     <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <div style="display:flex;">
+      lifes:{{lifes}}
+    </div>
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import { createNamespacedHelpers } from 'vuex'
+const { mapGetters, mapMutations } = createNamespacedHelpers('life')
 
 export default {
   name: 'App',
-  components: {
-    HelloWorld
-  }
+  mounted(){
+    this.initialize2Players()
+    this.addHistory({player:'player1', value : 8000})
+    this.addHistory({player:'player2', value : 8000})
+  },
+  computed : {
+    ...mapGetters([
+      'lifes'
+    ])
+  },
+  methods: {
+    ...mapMutations([
+      'initialize2Players',
+      'addHistory',
+    ]),
+  },
 }
 </script>
 
