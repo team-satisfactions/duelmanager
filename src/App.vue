@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
+    <img alt="Vue logo" src="./assets/logo.png" @click="resetHistory()">
     <div style="display:flex; justify-content: space-around;">
       <div v-for="(life,player) in viewLifes()" :key="player" style="position:relative;">
         <img :src="'/' + player + '.jpeg'" :alt="player" style="width:400px;">
@@ -54,6 +54,7 @@
         'createNewDuel',
         'addChangeHistory',
         'enterExistDuel',
+        'resetHistory',
       ]),
       openCalc(player){
         console.log({player})

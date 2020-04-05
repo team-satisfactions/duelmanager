@@ -62,6 +62,19 @@ export default {
                 .doc(state.duelId)
                 .update(histories)
         },
+        resetHistory({ state }) {
+            let histories = { ...state.histories };
+            state.players.forEach((player) => {
+                histories[player] = [{
+                    value: DEFAULT_START_LIFE_POINT,
+                    type: HistoryType.SET,
+                    active: true,
+                }];
+            });
+            db.collection('duels')
+                .doc(state.duelId)
+                .update(histories)
+        },
         createNewDuel: firestoreAction( ({ state, commit, bindFirestoreRef }) => {
             commit('initialize2Players');
             db.collection('duels').add(state.histories).then((docRef) => {
