@@ -1,6 +1,9 @@
 import { sum } from 'mathjs'
 import _ from 'lodash';
 import {HistoryType} from "./types.js";
+import { firestoreAction } from 'vuexfire'
+import {db} from "@/plugins/firebase";
+
 
 
 let DEFAULT_START_LIFE_POINT = 8000;
@@ -17,15 +20,15 @@ export default {
             state.players.forEach((player) => {
                 state.histories[player] = [{
                     value: DEFAULT_START_LIFE_POINT,
-                    type: HistoryType.get("SET"),
+                    type: HistoryType.SET,
                     active: true,
-                }]
+                }];
             });
         },
         addChangeHistory(state, [player, value]) {
             state.histories[player].push({
                 value,
-                type: HistoryType.get("CHANGE"),
+                type: HistoryType.CHANGE,
                 active: true,
             });
         },
@@ -34,9 +37,9 @@ export default {
         life(state) {
             return (player) => {
                 let actives = state.histories[player].filter(b => b.active);
-                let tailChanges = _.takeRightWhile(actives, (b) => b.type === HistoryType.get("CHANGE")).map((b) => b.value);
+                let tailChanges = _.takeRightWhile(actives, (b) => b.type === HistoryType.CHANGE).map((b) => b.value);
                 tailChanges.push(0);
-                let lastSet = actives[_.findLastIndex(actives, (b) => b.type === HistoryType.get("SET"))];
+                let lastSet = actives[_.findLastIndex(actives, (b) => b.type === HistoryType.SET)];
                 return lastSet.value + sum(tailChanges);
             }
         },
@@ -47,5 +50,19 @@ export default {
             });
             return ret;
         }
+    },
+    actions: {
+        createNewDuel: firestoreAction( ({ state, commit, bindFirestoreRef }) => {
+            commit('initialize2Players');
+            db.collection('duels').add(state.histories).then((docRef) => {
+                bindFirestoreRef('histories', docRef);
+                return null;
+            }).then(() => {
+            });
+        }),
+        enterExistDuel: firestoreAction( ({ bindFirestoreRef }, duelId) => {
+            bindFirestoreRef('histories', db.collection('duels').doc('duelId'));
+            return null;
+        }),
     }
 }
