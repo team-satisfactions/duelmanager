@@ -113,17 +113,19 @@
         let oldValue = nowValue()
 
         let time = 900
-        let dt = time / 150
+        let dt = time / 30
         let v = Math.floor(newValue - oldValue)
 
         let gamma = 1 / 2.2
+        let gamma2 = 1 / 20
         //document.getElementById("life-last").loop = false;
         //document.getElementById("life-last").currentTime = 0;
         document.getElementById("life").play();
         await new Promise((resolve)=>{
           let f = (i=0) =>{
             let x = dt * i / time
-            this.viewLifes_[player] = Math.floor(oldValue + Math.pow(x,gamma) * v)
+            let g = x < 0.8 ? gamma : gamma2
+            this.viewLifes_[player] = Math.floor(oldValue + Math.pow(x,g) * v)
             console.log(dt,x)
             if( (v <= 0 && newValue < nowValue())
                     ||(v >  0 && newValue > nowValue()) ) {
