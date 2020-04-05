@@ -2,7 +2,7 @@
   <div id="app">
     <img alt="Vue logo" src="./assets/logo.png">
     <div style="display:flex; justify-content: space-around;">
-      <div v-for="(life,player) in lifes()" :key="player" style="position:relative;">
+      <div v-for="(life,player) in viewLifes()" :key="player" style="position:relative;">
         <img :src="'/' + player + '.jpeg'" :alt="player" style="width:400px;">
         <div class="life-box" @click="openCalc(player)">
           <h1 style="text-align:start">{{player}}</h1>
@@ -27,7 +27,9 @@ export default {
   data() {
     return {
       calcPlayer : '',
-      isShowCalc : false
+      isShowCalc : false,
+      isRealLife : true,
+      viewLifes_ : null
     }
   },
   components: {
@@ -37,8 +39,15 @@ export default {
     this.initialize2Players()
   },
   computed : {
+    ...mapGetters([
+      'lifes'
+    ]),
   },
   methods: {
+    ...mapMutations([
+      'initialize2Players',
+      'addChangeHistory',
+    ]),
     openCalc(player){
       console.log({player})
       this.calcPlayer = player
@@ -51,14 +60,52 @@ export default {
     closeCalc(){
       this.isShowCalc = false
     },
-    ...mapMutations([
-      'initialize2Players',
-      'addChangeHistory',
-    ]),
-    ...mapGetters([
-      'lifes'
-    ])
+    viewLifes() {
+      return this.isRealLife ? this.lifes : this.viewLifes_
+    },
+    async viewLifeCalc(){
+      this.isRealLife = false
+
+      let newLifes = this.lifes
+
+      let diffPlayers = Object.keys(this.viewLifes_).filter(key=>{
+        return newLifes[key] != this.viewLifes_[key]
+      })
+      let player   = diffPlayers[0]
+      let newValue = newLifes[player]
+      let nowValue = () => this.viewLifes_[player]
+
+      let time = 500
+      let dt = time / 50
+      let dv = Math.floor((newValue - nowValue()) / (time / dt))
+
+      await new Promise((resolve)=>{
+        let f = () =>{
+          this.viewLifes_[player] += dv
+          if( (dv <= 0 && newValue < nowValue())
+            ||(dv >  0 && newValue > nowValue()) ) {
+            setTimeout(f,dt)
+            return
+          }
+          console.log('resolve()')
+          resolve()
+          return
+        };
+        f();
+      })
+      this.isRealLife = true
+      this.viewLifes_ = newLifes
+    },
   },
+  watch: {
+    lifes(newLifes){
+      if(this.viewLifes_ == null) {
+        this.viewLifes_ = newLifes
+        return
+      }
+      this.viewLifeCalc()
+    }
+  }
 }
 </script>
 
