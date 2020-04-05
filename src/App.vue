@@ -1,5 +1,8 @@
 <template>
   <div id="app">
+    <audio id="life" preload="auto" loop="true">
+      <source src="./assets/SE/life.wav" type="audio/mp3">
+    </audio>
     <img alt="Vue logo" src="./assets/logo.png" @click="resetHistory()">
     <div style="display:flex; justify-content: space-around;">
       <div v-for="(life,player) in viewLifes()" :key="player" style="position:relative;">
@@ -63,6 +66,9 @@
       }
     },
     computed : {
+      lifeSound() {
+        return document.getElementById("life");
+      },
       ...mapGetters([
         'lifes'
       ]),
@@ -105,6 +111,7 @@
         let dt = time / 50
         let dv = Math.floor((newValue - nowValue()) / (time / dt))
 
+        document.getElementById("life").play();
         await new Promise((resolve)=>{
           let f = () =>{
             this.viewLifes_[player] += dv
@@ -118,12 +125,15 @@
             return
           };
           f();
-        })
+        });
+        document.getElementById("life").pause();
+        document.getElementById("life").currentTime = 0;
+
         this.isRealLife = true
         this.viewLifes_ = newLifes
       },
-    },
-    watch: {
+  },
+  watch: {
       lifes(newLifes){
         if(this.viewLifes_ == null) {
           this.viewLifes_ = newLifes
