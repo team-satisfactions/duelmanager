@@ -1,9 +1,12 @@
 <template>
   <div class="overlay" @click.prevent="close" v-show="isShow">
     <div class="calc-box" @click.stop>
-      <div class="result">{{ sign ? '+' : '\u2212'}}{{ result }}</div>
-      <div class="calc-button red"   @click="negative">-</div>
-      <div class="calc-button blue"  @click="positive">+</div>
+      <div class="result"
+        :class="{ red : sign, blue : !sign }">
+        {{ sign ? '+' : '\u2212'}}{{ result }}
+      </div>
+      <div class="calc-button blue"   @click="negative">-</div>
+      <div class="calc-button red"  @click="positive">+</div>
       <div class="calc-button green" @click="returnResult">=</div>
       <div class="calc-button"
         v-for="v in [1,2,3,4,5,6,7,8,9,0]" :key="v"  @click="addNumber(v)">{{v}}</div>
@@ -98,10 +101,16 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 0px;
   height:100px;
-  width:100%;
+  width: calc(100% - 10px);
+  margin: 10px;
   font-size:56px;
+}
+.result.red {
+  background:rgba(255,0,0,0.2);
+}
+.result.blue {
+  background:rgba(0,0,255,0.2)
 }
 .calc-button:hover {
   background:rgba(0,0,0,0.1);
