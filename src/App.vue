@@ -3,7 +3,7 @@
     <img alt="Vue logo" src="./assets/logo.png" @click="resetHistory()">
     <div style="display:flex; justify-content: space-around;">
       <div v-for="(life,player) in viewLifes()" :key="player" style="position:relative;">
-        <img :src="'/' + player + '.jpeg'" :alt="player" style="width:400px;">
+        <img :src="'https://github.com/' + playerNames[player] + '.png'" :alt="player" style="width:400px;">
         <div class="life-box" @click="openCalc(player)">
           <h1 style="text-align:start">{{player}}</h1>
           <div class="life-display">
@@ -20,6 +20,7 @@
 <script>
   import Calculator from './components/Calculator.vue'
   import { createNamespacedHelpers } from 'vuex'
+  import queryString from 'query-string'
   const { mapGetters, mapActions } = createNamespacedHelpers('life')
 
   export default {
@@ -29,22 +30,37 @@
         calcPlayer : '',
         isShowCalc : false,
         isRealLife : true,
-        viewLifes_ : null
+        viewLifes_ : null,
+        playerNames: {
+          player1: "higumachan",
+          player2: "amanoese",
+        }
       }
     },
     components: {
       Calculator
     },
     mounted(){
-        const hash = location.hash.slice(1);
-        if (!hash) {
-          this.createNewDuel().then(() => {
-              location.hash = "#" + this.$store.state.life.duelId;
-          });
-        }
-        else {
-          this.enterExistDuel(hash);
-        }
+      const parsed = queryString.parse(location.search);
+
+      console.log(parsed);
+
+      if (parsed['player1']) {
+        this.playerNames.player1 = parsed['player1'];
+      }
+      if (parsed['player2']) {
+        this.playerNames.player2 = parsed['player2'];
+      }
+
+      const hash = location.hash.slice(1);
+      if (!hash) {
+        this.createNewDuel().then(() => {
+          location.hash = "#" + this.$store.state.life.duelId;
+        });
+      }
+      else {
+        this.enterExistDuel(hash);
+      }
     },
     computed : {
       ...mapGetters([
