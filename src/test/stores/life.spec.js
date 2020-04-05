@@ -51,7 +51,7 @@ describe('stores/life.js', () => {
                        {"active": true, "type": HistoryType.CHANGE, "value": -300},
                    ];
                });
-               test('計算結果は7400になる', () => {
+               test('計算結果は7600になる', () => {
                    expect(store.getters['life']('player')).toBe(7600);
                })
            });
