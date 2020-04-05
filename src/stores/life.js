@@ -77,7 +77,7 @@ export default {
         },
         createNewDuel: firestoreAction( ({ state, commit, bindFirestoreRef }) => {
             commit('initialize2Players');
-            db.collection('duels').add(state.histories).then((docRef) => {
+            return db.collection('duels').add(state.histories).then((docRef) => {
                 commit('setDuelId', docRef.id);
                 return bindFirestoreRef('histories', docRef);
             });

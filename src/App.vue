@@ -38,7 +38,9 @@
     mounted(){
         const hash = location.hash.slice(1);
         if (!hash) {
-          this.createNewDuel();
+          this.createNewDuel().then(() => {
+              location.hash = "#" + this.$store.state.life.duelId;
+          });
         }
         else {
           this.enterExistDuel(hash);
