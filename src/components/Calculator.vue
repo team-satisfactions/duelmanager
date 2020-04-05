@@ -30,10 +30,14 @@ export default {
   data() {
     return {
       result : 0,
-      sign: true,
+      sign: false,
     }
   },
   methods : {
+    init(){
+      this.sign   = false
+      this.result = 0
+    },
     returnResult(){
       let num = this.sign ? this.result : -this.result
       this.$emit('result',num)
@@ -60,8 +64,7 @@ export default {
   },
   watch: {
     isShow(){
-      this.sign   = true
-      this.result = 0
+      this.init()
     }
   }
 }
