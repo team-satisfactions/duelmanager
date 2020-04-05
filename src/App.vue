@@ -1,7 +1,7 @@
 <template>
   <div id="app">
-    <audio id="life" preload="auto" loop="true">
-      <source src="./assets/SE/life.wav" type="audio/mp3">
+    <audio id="life" preload="auto">
+      <source src="./assets/SE/life-full.wav" type="audio/mp3">
     </audio>
 
     <audio id="life-last" preload="auto">
@@ -111,12 +111,12 @@
         let newValue = newLifes[player]
         let nowValue = () => this.viewLifes_[player]
 
-        let time = 500
-        let dt = time / 50
+        let time = 900
+        let dt = time / 150
         let dv = Math.floor((newValue - nowValue()) / (time / dt))
 
-        document.getElementById("life-last").loop = false;
-        document.getElementById("life-last").currentTime = 0;
+        //document.getElementById("life-last").loop = false;
+        //document.getElementById("life-last").currentTime = 0;
         document.getElementById("life").play();
         await new Promise((resolve)=>{
           let f = () =>{
@@ -132,9 +132,9 @@
           };
           f();
         });
-        document.getElementById("life").pause();
-        document.getElementById("life").currentTime = 0;
-        document.getElementById("life-last").play();
+        //document.getElementById("life").pause();
+        //document.getElementById("life").currentTime = 0;
+        //document.getElementById("life-last").play();
 
         this.isRealLife = true
         this.viewLifes_ = newLifes
