@@ -1,7 +1,6 @@
 import firebase from "firebase";
-import {firebaseConfig} from "../../config/firebase-config";
 
-
+const firebaseConfig = JSON.parse(process.env.VUE_APP_FIREBASE_CONFIG)
 // Initialize Firebase
 
 const firebaseApp = firebase.initializeApp(firebaseConfig);
