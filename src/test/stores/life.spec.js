@@ -1,14 +1,14 @@
 import Vuex from 'vuex';
-import life from '../../store/life.js';
+import life from '../../stores/life.js';
 import { createLocalVue } from '@vue/test-utils';
-import {HistoryType} from "../../store/types.js";
+import {HistoryType} from "../../stores/types.js";
 
 const localVue = createLocalVue();
 
 localVue.use(Vuex);
 
 
-describe('store/life.js', () => {
+describe('stores/life.js', () => {
    let store ;
    beforeEach(() => {
       store = new Vuex.Store(life);
