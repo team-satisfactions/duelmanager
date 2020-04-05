@@ -2,7 +2,7 @@ import { sum } from 'mathjs'
 import _ from 'lodash';
 import {HistoryType} from "./types.js";
 import { firestoreAction } from 'vuexfire'
-import {db} from "@/plugins/firebase";
+import {db} from "../plugins/firebase";
 
 
 

@@ -15,18 +15,46 @@ describe('stores/life.js', () => {
    });
    describe('getters', () => {
        describe('life', () => {
-          beforeEach(() => {
-              store.state.players = ["player"];
-              store.state.histories["player"] = [
-                  {"active": true, "type": HistoryType.get("SET"), "value": 8000},
-                  {"active": true, "type": HistoryType.get("CHANGE"), "value": -100},
-                  {"active": true, "type": HistoryType.get("CHANGE"), "value": -200},
-                  {"active": true, "type": HistoryType.get("CHANGE"), "value": -300},
-              ];
-          });
-          test('計算結果は7400になる', () => {
-              expect(store.getters['life']('player')).toBe(7400);
-          })
+           describe('通常の計算', () => {
+               beforeEach(() => {
+                   store.state.players = ["player"];
+                   store.state.histories["player"] = [
+                       {"active": true, "type": HistoryType.SET, "value": 8000},
+                       {"active": true, "type": HistoryType.CHANGE, "value": -100},
+                       {"active": true, "type": HistoryType.CHANGE, "value": -200},
+                       {"active": true, "type": HistoryType.CHANGE, "value": -300},
+                   ];
+               });
+               test('計算結果は7400になる', () => {
+                   expect(store.getters['life']('player')).toBe(7400);
+               })
+           });
+           describe('0以下になったとき', () => {
+               beforeEach(() => {
+                   store.state.players = ["player"];
+                   store.state.histories["player"] = [
+                       {"active": true, "type": HistoryType.SET, "value": 8000},
+                       {"active": true, "type": HistoryType.CHANGE, "value": -8001},
+                   ];
+               });
+               test('計算結果は0になる', () => {
+                   expect(store.getters['life']('player')).toBe(0);
+               })
+           });
+           describe('active=falseを含む場合', () => {
+               beforeEach(() => {
+                   store.state.players = ["player"];
+                   store.state.histories["player"] = [
+                       {"active": true, "type": HistoryType.SET, "value": 8000},
+                       {"active": true, "type": HistoryType.CHANGE, "value": -100},
+                       {"active": false, "type": HistoryType.CHANGE, "value": -200},
+                       {"active": true, "type": HistoryType.CHANGE, "value": -300},
+                   ];
+               });
+               test('計算結果は7400になる', () => {
+                   expect(store.getters['life']('player')).toBe(7600);
+               })
+           });
        });
    });
    describe('mutations', () => {
