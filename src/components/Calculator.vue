@@ -13,6 +13,10 @@
   </div>
 </template>
 <script>
+
+let calcRange = (num,max=99999,min=-99999) => {
+  return Math.max(Math.min(num,max),min)
+}
 export default {
   props : {
     isShow :  {
@@ -28,26 +32,33 @@ export default {
   },
   methods : {
     returnResult(){
-      this.$emit('result',this.result)
+      let num = this.sign ? this.result : -this.result
+      this.$emit('result',num)
       this.close()
     },
     close(){
       this.$emit('update:isShow',false)
     },
     addNumber(num){
-      this.result = Math.max(Math.min(this.result * 10 + num,99999),-99999)
+      this.result = calcRange(this.result * 10 + num)
     },
     clearNumber(){
       this.result = 0
     },
     multiplication(num){
-      this.result = this.result * num
+      this.result = calcRange(this.result * num)
     },
     negative(){
       this.sign = false
     },
     positive(){
       this.sign = true
+    }
+  },
+  watch: {
+    isShow(){
+      this.sign   = true
+      this.result = 0
     }
   }
 }
