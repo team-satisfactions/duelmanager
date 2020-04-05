@@ -115,8 +115,6 @@
         let dt = time / 150
         let dv = Math.floor((newValue - nowValue()) / (time / dt))
 
-        //document.getElementById("life-last").loop = false;
-        //document.getElementById("life-last").currentTime = 0;
         document.getElementById("life").play();
         await new Promise((resolve)=>{
           let f = () =>{
@@ -132,9 +130,6 @@
           };
           f();
         });
-        //document.getElementById("life").pause();
-        //document.getElementById("life").currentTime = 0;
-        //document.getElementById("life-last").play();
 
         this.isRealLife = true
         this.viewLifes_ = newLifes
