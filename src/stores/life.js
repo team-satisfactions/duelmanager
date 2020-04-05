@@ -26,6 +26,9 @@ export default {
                 }];
             });
         },
+        setDuelId(state, duelId) {
+            state.duelId = duelId
+        }
     },
     getters: {
         life(state) {
@@ -47,7 +50,7 @@ export default {
     },
     actions: {
         addChangeHistory({ state }, [player, value]) {
-            let histories = { ...state.histories }
+            let histories = { ...state.histories };
             let newValue = {
                 value,
                 type: HistoryType.CHANGE,
@@ -62,13 +65,13 @@ export default {
         createNewDuel: firestoreAction( ({ state, commit, bindFirestoreRef }) => {
             commit('initialize2Players');
             db.collection('duels').add(state.histories).then((docRef) => {
-                state.duelId = docRef.id;
+                commit('setDuelId', docRef.id);
                 return bindFirestoreRef('histories', docRef);
             });
         }),
-        enterExistDuel: firestoreAction( ({ state, commit, bindFirestoreRef }, duelId) => {
+        enterExistDuel: firestoreAction( ({ commit, bindFirestoreRef }, duelId) => {
             commit('initialize2Players');
-            state.duelId = duelId;
+            commit('setDuelId', duelId);
             return bindFirestoreRef('histories', db.collection('duels').doc(duelId));
         }),
     }
