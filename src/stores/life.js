@@ -37,7 +37,7 @@ export default {
                 let tailChanges = _.takeRightWhile(actives, (b) => b.type === HistoryType.CHANGE).map((b) => b.value);
                 tailChanges.push(0);
                 let lastSet = actives[_.findLastIndex(actives, (b) => b.type === HistoryType.SET)];
-                return lastSet.value + sum(tailChanges);
+                return Math.max(lastSet.value + sum(tailChanges), 0);
             }
         },
         lifes(state, getters) {
