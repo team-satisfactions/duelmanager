@@ -2,7 +2,7 @@ import { sum } from 'mathjs'
 import _ from 'lodash';
 import {HistoryType} from "./types.js";
 import { firestoreAction } from 'vuexfire'
-import {db} from "@/plugins/firebase";
+import {db} from "../plugins/firebase";
 
 
 
@@ -37,7 +37,7 @@ export default {
                 let tailChanges = _.takeRightWhile(actives, (b) => b.type === HistoryType.CHANGE).map((b) => b.value);
                 tailChanges.push(0);
                 let lastSet = actives[_.findLastIndex(actives, (b) => b.type === HistoryType.SET)];
-                return lastSet.value + sum(tailChanges);
+                return Math.max(lastSet.value + sum(tailChanges), 0);
             }
         },
         lifes(state, getters) {
