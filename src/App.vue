@@ -110,20 +110,24 @@
         let player   = diffPlayers[0]
         let newValue = newLifes[player]
         let nowValue = () => this.viewLifes_[player]
+        let oldValue = nowValue()
 
         let time = 900
         let dt = time / 150
-        let dv = Math.floor((newValue - nowValue()) / (time / dt))
+        let v = Math.floor(newValue - oldValue)
 
+        let gamma = 1 / 2.2
         //document.getElementById("life-last").loop = false;
         //document.getElementById("life-last").currentTime = 0;
         document.getElementById("life").play();
         await new Promise((resolve)=>{
-          let f = () =>{
-            this.viewLifes_[player] += dv
-            if( (dv <= 0 && newValue < nowValue())
-                    ||(dv >  0 && newValue > nowValue()) ) {
-              setTimeout(f,dt)
+          let f = (i=0) =>{
+            let x = dt * i / time
+            this.viewLifes_[player] = Math.floor(oldValue + Math.pow(x,gamma) * v)
+            console.log(dt,x)
+            if( (v <= 0 && newValue < nowValue())
+                    ||(v >  0 && newValue > nowValue()) ) {
+              setTimeout(f.bind(this,i+1),dt)
               return
             }
             console.log('resolve()')
