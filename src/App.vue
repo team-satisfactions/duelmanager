@@ -3,6 +3,10 @@
     <audio id="life" preload="auto" loop="true">
       <source src="./assets/SE/life.wav" type="audio/mp3">
     </audio>
+
+    <audio id="life-last" preload="auto">
+      <source src="./assets/SE/life-last.wav" type="audio/mp3">
+    </audio>
     <img alt="Vue logo" src="./assets/logo.png" @click="resetHistory()">
     <div style="display:flex; justify-content: space-around;">
       <div v-for="(life,player) in viewLifes()" :key="player" style="position:relative;">
@@ -111,6 +115,8 @@
         let dt = time / 50
         let dv = Math.floor((newValue - nowValue()) / (time / dt))
 
+        document.getElementById("life-last").loop = false;
+        document.getElementById("life-last").currentTime = 0;
         document.getElementById("life").play();
         await new Promise((resolve)=>{
           let f = () =>{
@@ -128,6 +134,7 @@
         });
         document.getElementById("life").pause();
         document.getElementById("life").currentTime = 0;
+        document.getElementById("life-last").play();
 
         this.isRealLife = true
         this.viewLifes_ = newLifes
