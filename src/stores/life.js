@@ -26,11 +26,15 @@ export default {
             });
         },
         addChangeHistory(state, [player, value]) {
-            state.histories[player].push({
+            let histories = { ...state.histories }
+            let newValue = {
                 value,
-                type: HistoryType.CHANGE,
+                type: HistoryType.get("CHANGE"),
                 active: true,
-            });
+            };
+
+            histories[player] = [ ...state.histories[player], newValue ];
+            state.histories = histories
         },
     },
     getters: {
