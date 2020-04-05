@@ -7,11 +7,11 @@
       </div>
       <div class="calc-button blue"   @click="negative">-</div>
       <div class="calc-button red"  @click="positive">+</div>
-      <div class="calc-button green" @click="returnResult">=</div>
+      <div class="calc-button yellow" @click="clearNumber">C</div>
       <div class="calc-button"
         v-for="v in [1,2,3,4,5,6,7,8,9,0]" :key="v"  @click="addNumber(v)">{{v}}</div>
       <div class="calc-button" @click="multiplication(100)">00</div>
-      <div class="calc-button yellow" @click="clearNumber">C</div>
+      <div class="calc-button green" @click="returnResult">=</div>
     </div>
   </div>
 </template>
@@ -30,10 +30,14 @@ export default {
   data() {
     return {
       result : 0,
-      sign: true,
+      sign: false,
     }
   },
   methods : {
+    init(){
+      this.sign   = false
+      this.result = 0
+    },
     returnResult(){
       let num = this.sign ? this.result : -this.result
       this.$emit('result',num)
@@ -60,8 +64,7 @@ export default {
   },
   watch: {
     isShow(){
-      this.sign   = true
-      this.result = 0
+      this.init()
     }
   }
 }
