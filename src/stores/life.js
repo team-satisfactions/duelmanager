@@ -56,13 +56,10 @@ export default {
             commit('initialize2Players');
             db.collection('duels').add(state.histories).then((docRef) => {
                 bindFirestoreRef('histories', docRef);
-                return null;
-            }).then(() => {
             });
         }),
         enterExistDuel: firestoreAction( ({ bindFirestoreRef }, duelId) => {
-            bindFirestoreRef('histories', db.collection('duels').doc('duelId'));
-            return null;
+            bindFirestoreRef('histories', db.collection('duels').doc(duelId));
         }),
     }
 }
