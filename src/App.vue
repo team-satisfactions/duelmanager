@@ -5,7 +5,7 @@
       <div v-for="(life,player) in viewLifes()" :key="player" style="position:relative;">
         <img :src="'https://github.com/' + playerNames[player] + '.png'" :alt="player" style="width:400px;">
         <div class="life-box" @click="openCalc(player)">
-          <h1 style="text-align:start">{{player}}</h1>
+          <h1 style="text-align:start">{{playerNames[player]}}</h1>
           <div class="life-display">
             <span>LP</span>
             <span>{{life}}</span>
