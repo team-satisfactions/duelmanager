@@ -115,6 +115,7 @@
         let dt = time / 150
         let dv = Math.floor((newValue - nowValue()) / (time / dt))
 
+        // TODO(higumachan): SoundManager的なやつを作る
         document.getElementById("life").play();
         await new Promise((resolve)=>{
           let f = () =>{
