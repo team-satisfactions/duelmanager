@@ -4,21 +4,32 @@
     <div style="display:flex; justify-content: space-around;">
       <div v-for="(life,player) in lifes" :key="player" style="position:relative;">
         <img :src="'/' + player + '.jpeg'" :alt="player" style="width:400px;">
-        <div class="life-box">
+        <div class="life-box" @click="openCalc(player)">
           <h1 style="text-align:start">{{player}}</h1>
           <div class="font-big">LP {{life}}</div>
         </div>
       </div>
     </div>
+    <Calculator :isShow.sync="isShowCalc" @result="calcLife"></Calculator>
   </div>
 </template>
 
 <script>
+import Calculator from './components/Calculator.vue'
 import { createNamespacedHelpers } from 'vuex'
 const { mapGetters, mapMutations } = createNamespacedHelpers('life')
 
 export default {
   name: 'App',
+  data() {
+    return {
+      calcPlayer : '',
+      isShowCalc : false
+    }
+  },
+  components: {
+    Calculator
+  },
   mounted(){
     this.initialize2Players()
     this.addHistory({player:'player1', value : 8000})
@@ -30,6 +41,18 @@ export default {
     ])
   },
   methods: {
+    openCalc(player){
+      console.log({player})
+      this.calcPlayer = player
+      this.isShowCalc = true
+    },
+    calcLife(value){
+      const player = this.calcPlayer
+      this.addHistory({player, value})
+    },
+    closeCalc(){
+      this.isShowCalc = false
+    },
     ...mapMutations([
       'initialize2Players',
       'addHistory',
