@@ -112,35 +112,30 @@
         let nowValue = () => this.viewLifes_[player]
         let oldValue = nowValue()
 
-        let time = 900
-        let dt = time / 30
-        let v = Math.floor(newValue - oldValue)
+        let time = 900;
+        let dt   = 50
+        let v = Math.floor(newValue - oldValue);
+        let myLogistic = x => 0.5 * (Math.tanh(Math.PI * ( 2 * x - 1)) + 1);
 
-        let gamma = 1 / 2.2
-        let gamma2 = 1 / 20
-        //document.getElementById("life-last").loop = false;
-        //document.getElementById("life-last").currentTime = 0;
         document.getElementById("life").play();
+
         await new Promise((resolve)=>{
-          let f = (i=0) =>{
-            let x = dt * i / time
-            let g = x < 0.8 ? gamma : gamma2
-            this.viewLifes_[player] = Math.floor(oldValue + Math.pow(x,g) * v)
-            console.log(dt,x)
-            if( (v <= 0 && newValue < nowValue())
-                    ||(v >  0 && newValue > nowValue()) ) {
-              setTimeout(f.bind(this,i+1),dt)
+          let startTime = +(new Date())
+
+          let interval = () => {
+            let t = (+(new Date())-startTime)
+            let x = t / time
+
+            if(t > time) {
+              console.log('resolve()')
+              resolve()
               return
             }
-            console.log('resolve()')
-            resolve()
-            return
+            this.viewLifes_[player] = Math.floor(oldValue + myLogistic(x) * v)
+            setTimeout(interval.bind(this),dt)
           };
-          f();
+          interval();
         });
-        //document.getElementById("life").pause();
-        //document.getElementById("life").currentTime = 0;
-        //document.getElementById("life-last").play();
 
         this.isRealLife = true
         this.viewLifes_ = newLifes
