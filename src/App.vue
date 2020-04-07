@@ -94,31 +94,35 @@
 
         let newLifes = this.lifes
 
-        let diffPlayers = Object.keys(this.viewLifes_).filter(key=>{
+        let effectPromises = Object.keys(this.viewLifes_).filter(key=>{
           return newLifes[key] != this.viewLifes_[key]
-        })
-        let player   = diffPlayers[0]
-        let newValue = newLifes[player]
-        let nowValue = () => this.viewLifes_[player]
+        }).map(key=>{
+          let player   = key
+          let newValue = newLifes[player]
+          let nowValue = () => this.viewLifes_[player]
 
-        let time = 500
-        let dt = time / 50
-        let dv = Math.floor((newValue - nowValue()) / (time / dt))
+          let time = 500
+          let dt = time / 50
+          let dv = Math.floor((newValue - nowValue()) / (time / dt))
 
-        await new Promise((resolve)=>{
-          let f = () =>{
-            this.viewLifes_[player] += dv
-            if( (dv <= 0 && newValue < nowValue())
-                    ||(dv >  0 && newValue > nowValue()) ) {
-              setTimeout(f,dt)
+          return new Promise((resolve)=>{
+            let f = () =>{
+              this.viewLifes_[player] += dv
+              if( (dv <= 0 && newValue < nowValue())
+                      ||(dv >  0 && newValue > nowValue()) ) {
+                setTimeout(f,dt)
+                return
+              }
+              console.log('resolve()')
+              resolve()
               return
-            }
-            console.log('resolve()')
-            resolve()
-            return
-          };
-          f();
+            };
+            f();
+          })
         })
+
+        await Promise.all(effectPromises)
+
         this.isRealLife = true
         this.viewLifes_ = newLifes
       },
