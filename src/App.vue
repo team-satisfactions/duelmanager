@@ -1,11 +1,7 @@
 <template>
   <div id="app">
-    <audio id="life" preload="auto">
+    <audio id="life" preload="auto" ref="life-sound">
       <source src="./assets/SE/life-full.wav" type="audio/mp3">
-    </audio>
-
-    <audio id="life-last" preload="auto">
-      <source src="./assets/SE/life-last.wav" type="audio/mp3">
     </audio>
     <img alt="Vue logo" src="./assets/logo.png" @click="resetHistory()">
     <div style="display:flex; justify-content: space-around;">
@@ -70,9 +66,6 @@
       }
     },
     computed : {
-      lifeSound() {
-        return document.getElementById("life");
-      },
       ...mapGetters([
         'lifes'
       ]),
@@ -117,7 +110,9 @@
         let v = Math.floor(newValue - oldValue);
         let myLogistic = x => 0.5 * (Math.tanh(Math.PI * ( 2 * x - 1)) + 1);
 
-        document.getElementById("life").play();
+        if(this.$refs['life-sound']){
+          this.$refs['life-sound'].play();
+        }
 
         await new Promise((resolve)=>{
           let startTime = +(new Date())
@@ -135,13 +130,12 @@
             setTimeout(interval.bind(this),dt)
           };
           interval();
-        });
-
+        })
         this.isRealLife = true
         this.viewLifes_ = newLifes
       },
-  },
-  watch: {
+    },
+    watch: {
       lifes(newLifes){
         if(this.viewLifes_ == null) {
           this.viewLifes_ = newLifes
