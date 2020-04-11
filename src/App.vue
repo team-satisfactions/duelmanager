@@ -8,7 +8,7 @@
       <div v-for="(life,player) in viewLifes()" :key="player" style="position:relative;">
         <img @click="showPlayerNameModal = true; editingPlayer = player;" :src="'https://github.com/' + playerNames[player] + '.png'" :alt="player" style="width:400px;">
         <div class="life-box" @click="openCalc(player)">
-          <h1 style="text-align:start">{{playerNames[player]}}</h1>
+          <h1 style="text-align:start">{{playerNames[player]}}</h1><img src="./assets/edit.svg" width="10vm" alt="">
           <div class="life-display">
             <span>LP</span>
             <span>{{life}}</span>
@@ -102,21 +102,21 @@
         return this.isRealLife ? this.lifes : this.viewLifes_
       },
       async viewLifeCalc(){
-        this.isRealLife = false
+        this.isRealLife = false;
 
-        let newLifes = this.lifes
+        let newLifes = this.lifes;
 
 
         let effectPromises = Object.keys(this.viewLifes_).filter(key=>{
-          return newLifes[key] != this.viewLifes_[key]
+          return newLifes[key] !== this.viewLifes_[key];
         }).map(key=>{
-          let player   = key
-          let newValue = newLifes[player]
-          let nowValue = () => this.viewLifes_[player]
-          let oldValue = nowValue()
+          let player   = key;
+          let newValue = newLifes[player];
+          let nowValue = () => this.viewLifes_[player];
+          let oldValue = nowValue();
 
           let time = 900;
-          let dt   = 50
+          let dt   = 50;
           let v = Math.floor(newValue - oldValue);
           let myLogistic = x => 0.5 * (Math.tanh(Math.PI * ( 2 * x - 1)) + 1);
 
@@ -126,34 +126,34 @@
           }
 
           return new Promise((resolve)=>{
-            let startTime = +(new Date())
+            let startTime = +(new Date());
 
             let interval = () => {
-              let t = (+(new Date())-startTime)
-              let x = t / time
+              let t = (+(new Date())-startTime);
+              let x = t / time;
 
               if(t > time) {
-                console.log('resolve()')
-                resolve()
+                console.log('resolve()');
+                resolve();
                 return
               }
-              this.viewLifes_[player] = Math.floor(oldValue + myLogistic(x) * v)
-              setTimeout(interval.bind(this),dt)
+              this.viewLifes_[player] = Math.floor(oldValue + myLogistic(x) * v);
+              setTimeout(interval.bind(this),dt);
             };
             interval();
           })
-        })
+        });
 
-        await Promise.all(effectPromises)
+        await Promise.all(effectPromises);
 
-        this.isRealLife = true
-        this.viewLifes_ = newLifes
+        this.isRealLife = true;
+        this.viewLifes_ = newLifes;
       },
     },
     watch: {
       lifes(newLifes){
         if(this.viewLifes_ == null) {
-          this.viewLifes_ = newLifes
+          this.viewLifes_ = newLifes;
           return
         }
         this.viewLifeCalc()
