@@ -1,4 +1,4 @@
 export let HistoryType = {
-    SET: 'SET',
-    CHANGE: 'CHANGE',
+  SET: "SET",
+  CHANGE: "CHANGE",
 };

@@ -1,21 +1,58 @@
 <template>
   <div id="app">
     <audio id="life" preload="auto" ref="life-sound">
-      <source src="./assets/SE/life-full.wav" type="audio/mp3">
+      <source src="./assets/SE/life-full.wav" type="audio/mp3" />
     </audio>
-    <img class="logo" alt="Vue logo" src="./assets/logo.png" @click="resetHistory()">
-    <img class="logo" alt="Coin logo" src="./assets/coin.png" @click="isShowCoin = true">
-    <div style="display:flex; justify-content: space-around;">
-      <div v-for="(life,player) in viewLifes()" :key="player" style="position:relative;">
-        <img :src="'https://github.com/' + playerNames[player] + '.png'" :alt="player" style="width:400px;">
+    <img
+      class="logo"
+      alt="Vue logo"
+      src="./assets/logo.png"
+      @click="resetHistory()"
+    />
+    <img
+      class="logo"
+      alt="Coin logo"
+      src="./assets/coin.png"
+      @click="isShowCoin = true"
+    />
+    <div style="display: flex; justify-content: space-around;">
+      <div
+        v-for="(life, player) in viewLifes()"
+        :key="player"
+        style="position: relative;"
+      >
+        <img
+          :src="'https://github.com/' + playerNames[player] + '.png'"
+          :alt="player"
+          style="width: 400px;"
+        />
         <div class="life-box" @click="openCalc(player)">
-          <h1 style="text-align:start">{{playerNames[player]}}
-            <img style="margin-left: 1%;" @click.stop="showPlayerNameModal = true; editingPlayer = player;" src="./assets/edit.svg" width="20vm" alt="">
-            <img style="margin-left: 1%;" @click.stop="showEditHistoryModal = true; editingPlayer = player;" src="./assets/editHistory.svg" width="20vm" alt="">
+          <h1 style="text-align: start;">
+            {{ playerNames[player] }}
+            <img
+              style="margin-left: 1%;"
+              @click.stop="
+                showPlayerNameModal = true;
+                editingPlayer = player;
+              "
+              src="./assets/edit.svg"
+              width="20vm"
+              alt=""
+            />
+            <img
+              style="margin-left: 1%;"
+              @click.stop="
+                showEditHistoryModal = true;
+                editingPlayer = player;
+              "
+              src="./assets/editHistory.svg"
+              width="20vm"
+              alt=""
+            />
           </h1>
           <div class="life-display">
             <span>LP</span>
-            <span>{{life}}</span>
+            <span>{{ life }}</span>
           </div>
         </div>
       </div>
@@ -25,180 +62,186 @@
     <Modal v-if="showPlayerNameModal" @close="showPlayerNameModal = false">
       <h3 slot="header">Playerの名前を設定してください</h3>
       <div slot="body">
-        <input type="text" @keypress.enter="submitPlayerNameModel" v-model="editingName" />
+        <input
+          type="text"
+          @keypress.enter="submitPlayerNameModel"
+          v-model="editingName"
+        />
         <button @click="submitPlayerNameModel">OK</button>
       </div>
       <div slot="footer"></div>
     </Modal>
-    <EditHistory v-if="showEditHistoryModal" :player="editingPlayer" @close="showEditHistoryModal = false"></EditHistory>
+    <EditHistory
+      v-if="showEditHistoryModal"
+      :player="editingPlayer"
+      @close="showEditHistoryModal = false"
+    ></EditHistory>
   </div>
 </template>
 
 <script>
-  import Calculator from './components/Calculator.vue'
-  import CoinToss from './components/CoinToss.vue'
-  import { createNamespacedHelpers } from 'vuex'
-  import Modal from "@/components/Modal";
-  import EditHistory from "@/components/EditHistory";
-  const { mapGetters, mapActions, mapState } = createNamespacedHelpers('life')
+import Calculator from "./components/Calculator.vue";
+import CoinToss from "./components/CoinToss.vue";
+import { createNamespacedHelpers } from "vuex";
+import Modal from "@/components/Modal";
+import EditHistory from "@/components/EditHistory";
+const { mapGetters, mapActions, mapState } = createNamespacedHelpers("life");
 
-  export default {
-    name: 'App',
-    data() {
-      return {
-        calcPlayer : '',
-        isShowCalc : false,
-        isShowCoin : false,
-        isRealLife : true,
-        viewLifes_ : null,
-        editingPlayer: null,
-        showPlayerNameModal: false,
-        editingName: "",
-        showEditHistoryModal: false,
+export default {
+  name: "App",
+  data() {
+    return {
+      calcPlayer: "",
+      isShowCalc: false,
+      isShowCoin: false,
+      isRealLife: true,
+      viewLifes_: null,
+      editingPlayer: null,
+      showPlayerNameModal: false,
+      editingName: "",
+      showEditHistoryModal: false,
+    };
+  },
+  components: {
+    Modal,
+    EditHistory,
+    CoinToss,
+    Calculator,
+  },
+  mounted() {
+    const hash = location.hash.slice(1);
+    if (!hash) {
+      this.createNewDuel().then(() => {
+        location.hash = "#" + this.$store.state.life.duelId;
+      });
+    } else {
+      this.enterExistDuel(hash);
+    }
+  },
+  computed: {
+    ...mapState(["playerNames"]),
+    ...mapGetters(["lifes"]),
+  },
+  methods: {
+    ...mapActions([
+      "createNewDuel",
+      "addChangeHistory",
+      "enterExistDuel",
+      "resetHistory",
+      "setPlayerName",
+    ]),
+    openCalc(player) {
+      console.log({ player });
+      this.calcPlayer = player;
+      this.isShowCalc = true;
+    },
+    calcLife(value) {
+      const player = this.calcPlayer;
+      this.addChangeHistory([player, value]);
+    },
+    submitPlayerNameModel() {
+      if (this.editingName) {
+        this.setPlayerName([this.editingPlayer, this.editingName]);
       }
+      this.showPlayerNameModal = false;
+      this.editingName = "";
+      this.editingPlayer = null;
     },
-    components: {
-      Modal,
-      EditHistory,
-      CoinToss,
-      Calculator
+    closeCalc() {
+      this.isShowCalc = false;
     },
-    mounted(){
-      const hash = location.hash.slice(1);
-      if (!hash) {
-        this.createNewDuel().then(() => {
-          location.hash = "#" + this.$store.state.life.duelId;
-        });
-      }
-      else {
-        this.enterExistDuel(hash);
-      }
+    viewLifes() {
+      return this.isRealLife ? this.lifes : this.viewLifes_;
     },
-    computed : {
-      ...mapState([
-          'playerNames',
-      ]),
-      ...mapGetters([
-        'lifes',
-      ]),
-    },
-    methods: {
-      ...mapActions([
-        'createNewDuel',
-        'addChangeHistory',
-        'enterExistDuel',
-        'resetHistory',
-        'setPlayerName',
-      ]),
-      openCalc(player){
-        console.log({player})
-        this.calcPlayer = player
-        this.isShowCalc = true
-      },
-      calcLife(value){
-        const player = this.calcPlayer
-        this.addChangeHistory([player, value])
-      },
-      submitPlayerNameModel() {
-        if (this.editingName) {
-          this.setPlayerName([this.editingPlayer, this.editingName]);
-        }
-        this.showPlayerNameModal = false;
-        this.editingName = "";
-        this.editingPlayer = null;
-      },
-      closeCalc(){
-        this.isShowCalc = false
-      },
-      viewLifes() {
-        return this.isRealLife ? this.lifes : this.viewLifes_
-      },
-      async viewLifeCalc(){
-        this.isRealLife = false;
+    async viewLifeCalc() {
+      this.isRealLife = false;
 
-        let newLifes = this.lifes;
+      let newLifes = this.lifes;
 
-
-        let effectPromises = Object.keys(this.viewLifes_).filter(key=>{
+      let effectPromises = Object.keys(this.viewLifes_)
+        .filter((key) => {
           return newLifes[key] !== this.viewLifes_[key];
-        }).map(key=>{
-          let player   = key;
+        })
+        .map((key) => {
+          let player = key;
           let newValue = newLifes[player];
           let nowValue = () => this.viewLifes_[player];
           let oldValue = nowValue();
 
           let time = 900;
-          let dt   = 50;
+          let dt = 50;
           let v = Math.floor(newValue - oldValue);
-          let myLogistic = x => 0.5 * (Math.tanh(Math.PI * ( 2 * x - 1)) + 1);
+          let myLogistic = (x) => 0.5 * (Math.tanh(Math.PI * (2 * x - 1)) + 1);
 
-          if(this.$refs['life-sound']){
+          if (this.$refs["life-sound"]) {
             // TODO(higumachan): SoundManager的なやつを作る
-            this.$refs['life-sound'].play();
+            this.$refs["life-sound"].play();
           }
 
-          return new Promise((resolve)=>{
-            let startTime = +(new Date());
+          return new Promise((resolve) => {
+            let startTime = +new Date();
 
             let interval = () => {
-              let t = (+(new Date())-startTime);
+              let t = +new Date() - startTime;
               let x = t / time;
 
-              if(t > time) {
-                console.log('resolve()');
+              if (t > time) {
+                console.log("resolve()");
                 resolve();
-                return
+                return;
               }
-              this.viewLifes_[player] = Math.floor(oldValue + myLogistic(x) * v);
-              setTimeout(interval.bind(this),dt);
+              this.viewLifes_[player] = Math.floor(
+                oldValue + myLogistic(x) * v
+              );
+              setTimeout(interval.bind(this), dt);
             };
             interval();
-          })
+          });
         });
 
-        await Promise.all(effectPromises);
+      await Promise.all(effectPromises);
 
-        this.isRealLife = true;
-        this.viewLifes_ = newLifes;
-      },
+      this.isRealLife = true;
+      this.viewLifes_ = newLifes;
     },
-    watch: {
-      lifes(newLifes){
-        if(this.viewLifes_ == null) {
-          this.viewLifes_ = newLifes;
-          return
-        }
-        this.viewLifeCalc()
+  },
+  watch: {
+    lifes(newLifes) {
+      if (this.viewLifes_ == null) {
+        this.viewLifes_ = newLifes;
+        return;
       }
-    }
-  }
+      this.viewLifeCalc();
+    },
+  },
+};
 </script>
 
 <style>
-  body {
-    height: 100vh;
-    margin: 0px;
-  }
-  .logo {
-    height: 25vh;
-  }
-  .life-box {
-    position: absolute;
-    bottom: 0;
-    width: calc( 100% - 20px );
-    padding : 10px;
-    background: rgba(255,255,255,0.8);
-  }
-  .life-display {
-    display: flex;
-    justify-content: space-between;
-    font-size: 86px;
-  }
-  #app {
-    font-family: Avenir, Helvetica, Arial, sans-serif;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    text-align: center;
-    color: #2c3e50;
-  }
+body {
+  height: 100vh;
+  margin: 0px;
+}
+.logo {
+  height: 25vh;
+}
+.life-box {
+  position: absolute;
+  bottom: 0;
+  width: calc(100% - 20px);
+  padding: 10px;
+  background: rgba(255, 255, 255, 0.8);
+}
+.life-display {
+  display: flex;
+  justify-content: space-between;
+  font-size: 86px;
+}
+#app {
+  font-family: Avenir, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-align: center;
+  color: #2c3e50;
+}
 </style>
