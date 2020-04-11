@@ -1,5 +1,5 @@
 <template>
-  <div class="overlay" @click.prevent="close" v-show="true">
+  <div class="overlay" @click.prevent="close" v-if="true">
     <div class="table">
       <div style="display:flex">
         <div class="coin-wrap">
@@ -18,12 +18,6 @@
 <script>
   let dt = 20;
   export default {
-    data(){
-      return {
-        transform : '',
-        bottom : 0
-      }
-    },
     methods : {
       toss(){
         let roleN = Math.random() > 0.5 ? 4 : 5

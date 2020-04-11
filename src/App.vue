@@ -17,11 +17,13 @@
       </div>
     </div>
     <Calculator :isShow.sync="isShowCalc" @result="calcLife"></Calculator>
+    <CoinToss></CoinToss>
   </div>
 </template>
 
 <script>
   import Calculator from './components/Calculator.vue'
+  import CoinToss from './components/CoinToss.vue'
   import { createNamespacedHelpers } from 'vuex'
   import queryString from 'query-string'
   const { mapGetters, mapActions } = createNamespacedHelpers('life')
@@ -41,7 +43,8 @@
       }
     },
     components: {
-      Calculator
+      Calculator,
+      CoinToss
     },
     mounted(){
       const parsed = queryString.parse(location.search);
