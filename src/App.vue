@@ -1,11 +1,7 @@
 <template>
   <div id="app">
-    <audio id="life" preload="auto">
+    <audio id="life" preload="auto" ref="life-sound">
       <source src="./assets/SE/life-full.wav" type="audio/mp3">
-    </audio>
-
-    <audio id="life-last" preload="auto">
-      <source src="./assets/SE/life-last.wav" type="audio/mp3">
     </audio>
     <img alt="Vue logo" src="./assets/logo.png" @click="resetHistory()">
     <div style="display:flex; justify-content: space-around;">
@@ -70,9 +66,6 @@
       }
     },
     computed : {
-      lifeSound() {
-        return document.getElementById("life");
-      },
       ...mapGetters([
         'lifes'
       ]),
@@ -110,33 +103,41 @@
         let player   = diffPlayers[0]
         let newValue = newLifes[player]
         let nowValue = () => this.viewLifes_[player]
+        let oldValue = nowValue()
 
-        let time = 900
-        let dt = time / 150
-        let dv = Math.floor((newValue - nowValue()) / (time / dt))
+        let time = 900;
+        let dt   = 50
+        let v = Math.floor(newValue - oldValue);
+        let myLogistic = x => 0.5 * (Math.tanh(Math.PI * ( 2 * x - 1)) + 1);
+
+        if(this.$refs['life-sound']){
+          this.$refs['life-sound'].play();
+        }
 
         // TODO(higumachan): SoundManager的なやつを作る
         document.getElementById("life").play();
         await new Promise((resolve)=>{
-          let f = () =>{
-            this.viewLifes_[player] += dv
-            if( (dv <= 0 && newValue < nowValue())
-                    ||(dv >  0 && newValue > nowValue()) ) {
-              setTimeout(f,dt)
+          let startTime = +(new Date())
+
+          let interval = () => {
+            let t = (+(new Date())-startTime)
+            let x = t / time
+
+            if(t > time) {
+              console.log('resolve()')
+              resolve()
               return
             }
-            console.log('resolve()')
-            resolve()
-            return
+            this.viewLifes_[player] = Math.floor(oldValue + myLogistic(x) * v)
+            setTimeout(interval.bind(this),dt)
           };
-          f();
-        });
-
+          interval();
+        })
         this.isRealLife = true
         this.viewLifes_ = newLifes
       },
-  },
-  watch: {
+    },
+    watch: {
       lifes(newLifes){
         if(this.viewLifes_ == null) {
           this.viewLifes_ = newLifes
