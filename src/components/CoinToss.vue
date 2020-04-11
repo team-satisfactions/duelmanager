@@ -1,10 +1,10 @@
 <template>
   <div class="overlay" @click.prevent="close" v-if="isShow">
     <div class="table" @click.stop>
-      <div style="display:flex;justify-content:end">
+      <div style="display: flex; justify-content: end;">
         <button @click="close">x</button>
       </div>
-      <div style="display:flex">
+      <div style="display: flex;">
         <div class="coin-wrap">
           <div class="coin" ref="coin">
             <div class="front">表</div>
@@ -20,67 +20,68 @@
   </div>
 </template>
 <script>
-  import chancer from 'chancer'
-  let dt = 20;
-  export default {
-    props : {
-      isShow :  {
-        type : Boolean,
-        default : false,
-      },
+import chancer from "chancer";
+let dt = 20;
+export default {
+  props: {
+    isShow: {
+      type: Boolean,
+      default: false,
     },
-    data(){
-      return {
-        isToss: false,
+  },
+  data() {
+    return {
+      isToss: false,
+    };
+  },
+  methods: {
+    async toss() {
+      if (this.isToss) {
+        return;
       }
+      this.isToss = true;
+      let roleN = chancer.coinToss(4, 5);
+      await this.role(roleN);
+      await new Promise((resolve) => {
+        setTimeout(resolve, 500);
+      });
+      this.isToss = false;
     },
-    methods : {
-      async toss(){
-        if(this.isToss){ return }
-        this.isToss = true
-        let roleN = chancer.coinToss(4,5)
-        await this.role(roleN)
-        await new Promise(resolve=>{
-          setTimeout(resolve,500)
-        })
-        this.isToss = false
-      },
-      async role(roleN=3){
-        let time = 700
-        let st = Date.now()
-        let rad = 180 / (time / roleN)
+    async role(roleN = 3) {
+      let time = 700;
+      let st = Date.now();
+      let rad = 180 / (time / roleN);
 
-        await new Promise(resolve=>{
-          let interval = ()=>{
-            let t = (Date.now() - st)
-            if(t >= time) {
-              this.coinStyle({
-                transform : `rotateX(${(roleN*180)%360}deg)`,
-                bottom : '0px'
-              })
-              resolve()
-              return
-            }
+      await new Promise((resolve) => {
+        let interval = () => {
+          let t = Date.now() - st;
+          if (t >= time) {
             this.coinStyle({
-              transform : `rotateX(${(t*rad)%360}deg)`,
-              bottom : Math.max(Math.sin((t / time) * Math.PI) * 200,0) + 'px'
-            })
-            setTimeout(interval,dt)
+              transform: `rotateX(${(roleN * 180) % 360}deg)`,
+              bottom: "0px",
+            });
+            resolve();
+            return;
           }
-          interval()
-        })
-      },
-      coinStyle(newStyle = {}){
-        Object.entries(newStyle)
-        .forEach(([key,value])=>{
-          this.$refs['coin'].style[key] = value
-        })
-      },
-      close(){
-        this.$emit('update:isShow',false)
-      }
-    }
-  }
+          this.coinStyle({
+            transform: `rotateX(${(t * rad) % 360}deg)`,
+            bottom: Math.max(Math.sin((t / time) * Math.PI) * 200, 0) + "px",
+          });
+          setTimeout(interval, dt);
+        };
+        interval();
+      });
+    },
+    coinStyle(newStyle = {}) {
+      Object.entries(newStyle).forEach(([key, value]) => {
+        this.$refs["coin"].style[key] = value;
+      });
+    },
+    close() {
+      this.$emit("update:isShow", false);
+    },
+  },
+};
 </script>
 <style scoped>
 .overlay {
@@ -88,31 +89,31 @@
   left: 0;
   width: 100%;
   height: 100%;
-  z-index:9999;
-  background-color : rgba(0,0,0,0.4);
+  z-index: 9999;
+  background-color: rgba(0, 0, 0, 0.4);
 }
 .table {
-  display:flex;
-  flex-direction:column;
-  background-color: rgba(255,255,255,0.8);
+  display: flex;
+  flex-direction: column;
+  background-color: rgba(255, 255, 255, 0.8);
 }
 .coin-wrap {
-  height:300px;
+  height: 300px;
   width: 200px;
-  position:relative;
+  position: relative;
 }
 .coin {
-  font-size:50px;
+  font-size: 50px;
   width: 100px;
   height: 100px;
   perspective: 550px;
   transform-style: preserve-3d;
   position: absolute;
-  bottom:0;
+  bottom: 0;
 }
 .coin > * {
-  width:inherit;
-  height:inherit;
+  width: inherit;
+  height: inherit;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -120,11 +121,11 @@
 }
 .front {
   position: absolute;
-  background: rgba(255,0,0,0.8);
+  background: rgba(255, 0, 0, 0.8);
 }
 .back {
   position: absolute;
-  background: rgba(0,0,255,0.8);
-  transform: rotateX(180deg) translateZ(2px);;
+  background: rgba(0, 0, 255, 0.8);
+  transform: rotateX(180deg) translateZ(2px);
 }
 </style>
