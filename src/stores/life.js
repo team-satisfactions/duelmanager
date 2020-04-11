@@ -52,7 +52,7 @@ export default {
         }
     },
     actions: {
-        addChangeHistory({ state, dispatch }, [player, value]) {
+        async addChangeHistory({ state, dispatch }, [player, value]) {
             let histories = { ...state.histories };
             let newValue = {
                 value,
@@ -64,23 +64,21 @@ export default {
 
             return dispatch('updateHistories', histories);
         },
-        setPlayerName({ state, dispatch }, [player, name]) {
+        async setPlayerName({ state, dispatch }, [player, name]) {
             const playerNames = { ...state.playerNames };
             playerNames[player] = name;
-            return dispatch('getDuel').then((doc) => {
-                return doc.get('playerNames').update(playerNames);
-            });
+            const duel = await dispatch('getDuel');
+            return duel.get('playerNames').update(playerNames);
         },
-        getDuel({ state }) {
+        async getDuel({ state }) {
             return db.collection('duels')
                 .doc(state.duelId).get();
         },
-        updateHistories({ dispatch }, histories) {
-            return dispatch('getDuel').then((duel) => {
-                return duel.get('histories').update(histories);
-            });
+        async updateHistories({ dispatch }, histories) {
+            const duel = await dispatch('getDuel');
+            return duel.get('histories').update(histories);
         },
-        resetHistory({ state, dispatch, getters }) {
+        async resetHistory({ state, dispatch, getters }) {
             let histories = { ...state.histories };
             getters.players.forEach((player) => {
                 histories[player] = [{
