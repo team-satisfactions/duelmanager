@@ -62,15 +62,18 @@ export default {
 
             histories[player] = [ ...state.histories[player], newValue ];
 
-            return dispatch('getDuel').then((duel) => {
-                return duel.get('histories').update(histories);
-            });
+            return dispatch('updateHistories', histories);
         },
         getDuel({ state }) {
             return db.collection('duels')
                 .doc(state.duelId).get();
         },
-        resetHistory({ state, getters }) {
+        updateHistories({ dispatch }, histories) {
+            return dispatch('getDuel').then((duel) => {
+                return duel.get('histories').update(histories);
+            });
+        },
+        resetHistory({ state, dispatch, getters }) {
             let histories = { ...state.histories };
             getters.players.forEach((player) => {
                 histories[player] = [{
@@ -79,9 +82,7 @@ export default {
                     active: true,
                 }];
             });
-            db.collection('duels')
-                .doc(state.duelId)
-                .update(histories)
+            return dispatch('updateHistories', histories);
         },
         createNewDuel: firestoreAction( ({ state, getters, commit, bindFirestoreRef }) => {
             commit('initialize2Players');
