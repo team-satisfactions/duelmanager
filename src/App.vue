@@ -23,7 +23,7 @@
     <Modal v-if="showPlayerNameModal" @close="showPlayerNameModal = false">
       <h3 slot="header">Playerの名前を設定してください</h3>
       <div slot="body">
-        <input type="text" v-model="editingName" />
+        <input type="text" @keypress.enter="submitPlayerNameModel" v-model="editingName" />
         <button @click="submitPlayerNameModel">OK</button>
       </div>
       <div slot="footer"></div>
