@@ -5,8 +5,8 @@
                 <div @click.stop class="modal-container">
                     <ul>
                         <li v-for="(history, i) in this.histories[this.player]" :key="i">
-                            {{history.value}}
-                            <input v-if="history.type !== HistoryType.SET" id="check" type="checkbox" @click.prevent="changeActive($event, i)" :checked="history.active">
+                            <span :class="history.active ? 'gray' : ''">{{history.value}}</span>
+                            <input v-if="history.type !== 'SET'" id="check" type="checkbox" @click="changeActive($event, i)" :checked="history.active ? 'checked' : ''">
                         </li>
                     </ul>
                 </div>
@@ -17,7 +17,6 @@
 
 <script>
     import { createNamespacedHelpers } from 'vuex'
-    import {HistoryType} from '@/stores/types';
 
     const { mapGetters, mapState, mapActions } = createNamespacedHelpers('life');
 
