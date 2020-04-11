@@ -35,36 +35,36 @@ export default {
   },
   methods : {
     init(){
-      this.sign   = false
-      this.result = 0
+      this.sign   = false;
+      this.result = 0;
     },
     returnResult(){
-      let num = this.sign ? this.result : -this.result
-      this.$emit('result',num)
-      this.close()
+      let num = this.sign ? this.result : -this.result;
+      this.$emit('result',num);
+      this.close();
     },
     close(){
-      this.$emit('update:isShow',false)
+      this.$emit('update:isShow',false);
     },
     addNumber(num){
-      this.result = calcRange(this.result * 10 + num)
+      this.result = calcRange(this.result * 10 + num);
     },
     clearNumber(){
-      this.result = 0
+      this.result = 0;
     },
     multiplication(num){
-      this.result = calcRange(this.result * num)
+      this.result = calcRange(this.result * num);
     },
     negative(){
-      this.sign = false
+      this.sign = false;
     },
     positive(){
-      this.sign = true
+      this.sign = true;
     }
   },
   watch: {
     isShow(){
-      this.init()
+      this.init();
     }
   }
 }

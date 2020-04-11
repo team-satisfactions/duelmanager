@@ -6,7 +6,7 @@
     <img alt="Vue logo" src="./assets/logo.png" @click="resetHistory()">
     <div style="display:flex; justify-content: space-around;">
       <div v-for="(life,player) in viewLifes()" :key="player" style="position:relative;">
-        <img @click.prevent="showPlayerNameModal = true; editingPlayer = player;" :src="'https://github.com/' + playerNames[player] + '.png'" :alt="player" style="width:400px;">
+        <img :src="'https://github.com/' + playerNames[player] + '.png'" :alt="player" style="width:400px;">
         <div class="life-box" @click="openCalc(player)">
           <h1 style="text-align:start">{{playerNames[player]}}<img @click.stop="showPlayerNameModal = true; editingPlayer = player;" src="./assets/edit.svg" width="20vm" alt=""></h1>
           <div class="life-display">
