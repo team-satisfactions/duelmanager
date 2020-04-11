@@ -6,7 +6,7 @@
     <img alt="Vue logo" src="./assets/logo.png" @click="resetHistory()">
     <div style="display:flex; justify-content: space-around;">
       <div v-for="(life,player) in viewLifes()" :key="player" style="position:relative;">
-        <img :src="'https://github.com/' + playerNames[player] + '.png'" :alt="player" style="width:400px;">
+        <img @click="showPlayerNameModal = true; editingPlayer = player;" :src="'https://github.com/' + playerNames[player] + '.png'" :alt="player" style="width:400px;">
         <div class="life-box" @click="openCalc(player)">
           <h1 style="text-align:start">{{playerNames[player]}}</h1>
           <div class="life-display">
@@ -17,14 +17,22 @@
       </div>
     </div>
     <Calculator :isShow.sync="isShowCalc" @result="calcLife"></Calculator>
+    <Modal v-if="showPlayerNameModal">
+      <h3 slot="header">Playerの名前を設定してください</h3>
+      <div slot="body">
+        <input type="text" v-model="editingName" />
+        <button @click="submitPlayerNameModel">OK</button>
+      </div>
+      <div slot="footer"></div>
+    </Modal>
   </div>
 </template>
 
 <script>
   import Calculator from './components/Calculator.vue'
   import { createNamespacedHelpers } from 'vuex'
-  import queryString from 'query-string'
-  const { mapGetters, mapActions } = createNamespacedHelpers('life')
+  import Modal from "@/components/Modal";
+  const { mapGetters, mapActions, mapState } = createNamespacedHelpers('life')
 
   export default {
     name: 'App',
@@ -34,27 +42,16 @@
         isShowCalc : false,
         isRealLife : true,
         viewLifes_ : null,
-        playerNames: {
-          player1: "higumachan",
-          player2: "amanoese",
-        }
+        editingPlayer: null,
+        showPlayerNameModal: false,
+        editingName: "",
       }
     },
     components: {
+      Modal,
       Calculator
     },
     mounted(){
-      const parsed = queryString.parse(location.search);
-
-      console.log(parsed);
-
-      if (parsed['player1']) {
-        this.playerNames.player1 = parsed['player1'];
-      }
-      if (parsed['player2']) {
-        this.playerNames.player2 = parsed['player2'];
-      }
-
       const hash = location.hash.slice(1);
       if (!hash) {
         this.createNewDuel().then(() => {
@@ -66,8 +63,11 @@
       }
     },
     computed : {
+      ...mapState([
+          'playerNames',
+      ]),
       ...mapGetters([
-        'lifes'
+        'lifes',
       ]),
     },
     methods: {
@@ -76,6 +76,7 @@
         'addChangeHistory',
         'enterExistDuel',
         'resetHistory',
+        'setPlayerName',
       ]),
       openCalc(player){
         console.log({player})
@@ -85,6 +86,14 @@
       calcLife(value){
         const player = this.calcPlayer
         this.addChangeHistory([player, value])
+      },
+      submitPlayerNameModel() {
+        if (this.editingName) {
+          this.setPlayerName([this.editingPlayer, this.editingName]);
+        }
+        this.showPlayerNameModal = false;
+        this.editingName = "";
+        this.editingPlayer = null;
       },
       closeCalc(){
         this.isShowCalc = false
@@ -98,8 +107,8 @@
         let newLifes = this.lifes
 
         let diffPlayers = Object.keys(this.viewLifes_).filter(key=>{
-          return newLifes[key] != this.viewLifes_[key]
-        })
+          return newLifes[key] != this.viewLifes_[key];
+        });
         let player   = diffPlayers[0]
         let newValue = newLifes[player]
         let nowValue = () => this.viewLifes_[player]

@@ -12,13 +12,13 @@ export default {
     namespaced: true,
     state: {
         histories: {},
-        player_names: {},
+        playerNames: {},
         duelId: null,
     },
     mutations: {
         initialize2Players(state) {
-            state.player_names = {"player1": "player1", "player2": "player2"};
-            Object.keys(state.player_names).forEach((player) => {
+            state.playerNames = {"player1": "player1", "player2": "player2"};
+            Object.keys(state.playerNames).forEach((player) => {
                 state.histories[player] = [{
                     value: DEFAULT_START_LIFE_POINT,
                     type: HistoryType.SET,
@@ -32,7 +32,7 @@ export default {
     },
     getters: {
         players(state) {
-            return Object.keys(state.player_names);
+            return Object.keys(state.playerNames).sort();
         },
         life(state) {
             return (player) => {
@@ -64,6 +64,13 @@ export default {
 
             return dispatch('updateHistories', histories);
         },
+        setPlayerName({ state, dispatch }, [player, name]) {
+            const playerNames = { ...state.playerNames };
+            playerNames[player] = name;
+            return dispatch('getDuel').then((doc) => {
+                return doc.get('playerNames').update(playerNames);
+            });
+        },
         getDuel({ state }) {
             return db.collection('duels')
                 .doc(state.duelId).get();
@@ -87,11 +94,11 @@ export default {
         createNewDuel: firestoreAction( ({ state, getters, commit, bindFirestoreRef }) => {
             commit('initialize2Players');
             const hp = db.collection('histories').add(state.histories);
-            const pp = db.collection('player_names').add(state.player_names);
+            const pp = db.collection('playerNames').add(state.playerNames);
             return Promise.all([hp, pp]).then(([historiesDocRef, playersDocRef]) => {
                 return db.collection('duels').add({
                     histories: historiesDocRef,
-                    player_names: playersDocRef,
+                    playerNames: playersDocRef,
                 }).then((docRef) => {
                     getters.players.forEach((player) => {
                         state.histories[player].forEach((history) => {
@@ -100,16 +107,19 @@ export default {
                     });
                     commit('setDuelId', docRef.id);
                     Promise.all([bindFirestoreRef('histories', historiesDocRef),
-                        bindFirestoreRef('player_names', playersDocRef)]);
+                        bindFirestoreRef('playerNames', playersDocRef)]);
                 });
             });
 
         }),
-        enterExistDuel: firestoreAction( ({ commit, bindFirestoreRef }, duelId) => {
+        enterExistDuel: firestoreAction( ({ commit, dispatch, bindFirestoreRef }, duelId) => {
             commit('initialize2Players');
             commit('setDuelId', duelId);
-            return db.collection('duels').doc(duelId).get().then((doc) => {
-                return bindFirestoreRef('histories', doc.get("histories"));
+            return dispatch("getDuel").then((duel) => {
+                return Promise.all([
+                    bindFirestoreRef('histories', duel.get("histories")),
+                    bindFirestoreRef('playerNames', duel.get("playerNames")),
+                ]);
             });
         }),
     }
