@@ -1,6 +1,9 @@
 <template>
-  <div class="overlay" @click.prevent="close" v-if="true">
-    <div class="table">
+  <div class="overlay" @click.prevent="close" v-if="isShow">
+    <div class="table" @click.stop>
+      <div style="display:flex;justify-content:end">
+        <button @click="close">x</button>
+      </div>
       <div style="display:flex">
         <div class="coin-wrap">
           <div class="coin" ref="coin">
@@ -20,6 +23,12 @@
   import chancer from 'chancer'
   let dt = 20;
   export default {
+    props : {
+      isShow :  {
+        type : Boolean,
+        default : false,
+      },
+    },
     data(){
       return {
         isToss: false,
@@ -32,7 +41,7 @@
         let roleN = chancer.coinToss(4,5)
         await this.role(roleN)
         await new Promise(resolve=>{
-          setTimeout(resolve,1000)
+          setTimeout(resolve,500)
         })
         this.isToss = false
       },
@@ -66,24 +75,12 @@
         .forEach(([key,value])=>{
           this.$refs['coin'].style[key] = value
         })
+      },
+      close(){
+        this.$emit('update:isShow',false)
       }
     }
   }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 </script>
 <style scoped>
 .overlay {

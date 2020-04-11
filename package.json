@@ -9,6 +9,7 @@
     "test": "jest"
   },
   "dependencies": {
+    "chancer": "^2.0.2",
     "core-js": "^3.6.4",
     "enum": "^2.5.0",
     "firebase": "^7.13.2",
