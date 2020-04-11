@@ -17,7 +17,7 @@
       </div>
     </div>
     <Calculator :isShow.sync="isShowCalc" @result="calcLife"></Calculator>
-    <Modal v-if="showPlayerNameModal">
+    <Modal v-if="showPlayerNameModal" @close="showPlayerNameModal = false">
       <h3 slot="header">Playerの名前を設定してください</h3>
       <div slot="body">
         <input type="text" v-model="editingName" />
@@ -25,6 +25,7 @@
       </div>
       <div slot="footer"></div>
     </Modal>
+    <EditHistory player="player1"></EditHistory>
   </div>
 </template>
 
@@ -32,6 +33,7 @@
   import Calculator from './components/Calculator.vue'
   import { createNamespacedHelpers } from 'vuex'
   import Modal from "@/components/Modal";
+  import EditHistory from "@/components/EditHistory";
   const { mapGetters, mapActions, mapState } = createNamespacedHelpers('life')
 
   export default {
@@ -49,6 +51,7 @@
     },
     components: {
       Modal,
+      EditHistory,
       Calculator
     },
     mounted(){
