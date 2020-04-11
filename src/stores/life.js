@@ -64,6 +64,13 @@ export default {
 
             return dispatch('updateHistories', histories);
         },
+        async modifyHistoryActive({ state, dispatch }, [player, index, active]) {
+            let histories = { ...state.histories };
+            histories[player] = [ ...state.histories[player] ];
+            histories[player][index].active = active;
+
+            return dispatch('updateHistories', histories);
+        },
         async setPlayerName({ state, dispatch }, [player, name]) {
             const playerNames = { ...state.playerNames };
             playerNames[player] = name;

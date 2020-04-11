@@ -8,7 +8,10 @@
       <div v-for="(life,player) in viewLifes()" :key="player" style="position:relative;">
         <img :src="'https://github.com/' + playerNames[player] + '.png'" :alt="player" style="width:400px;">
         <div class="life-box" @click="openCalc(player)">
-          <h1 style="text-align:start">{{playerNames[player]}}<img @click.stop="showPlayerNameModal = true; editingPlayer = player;" src="./assets/edit.svg" width="20vm" alt=""></h1>
+          <h1 style="text-align:start">{{playerNames[player]}}
+            <img style="margin-left: 1%;" @click.stop="showPlayerNameModal = true; editingPlayer = player;" src="./assets/edit.svg" width="20vm" alt="">
+            <img style="margin-left: 1%;" @click.stop="showEditHistoryModal = true; editingPlayer = player;" src="./assets/editHistory.svg" width="20vm" alt="">
+          </h1>
           <div class="life-display">
             <span>LP</span>
             <span>{{life}}</span>
@@ -17,7 +20,7 @@
       </div>
     </div>
     <Calculator :isShow.sync="isShowCalc" @result="calcLife"></Calculator>
-    <Modal v-if="showPlayerNameModal">
+    <Modal v-if="showPlayerNameModal" @close="showPlayerNameModal = false">
       <h3 slot="header">Playerの名前を設定してください</h3>
       <div slot="body">
         <input type="text" v-model="editingName" />
@@ -25,6 +28,7 @@
       </div>
       <div slot="footer"></div>
     </Modal>
+    <EditHistory v-if="showEditHistoryModal" :player="editingPlayer" @close="showEditHistoryModal = false"></EditHistory>
   </div>
 </template>
 
@@ -32,6 +36,7 @@
   import Calculator from './components/Calculator.vue'
   import { createNamespacedHelpers } from 'vuex'
   import Modal from "@/components/Modal";
+  import EditHistory from "@/components/EditHistory";
   const { mapGetters, mapActions, mapState } = createNamespacedHelpers('life')
 
   export default {
@@ -45,10 +50,12 @@
         editingPlayer: null,
         showPlayerNameModal: false,
         editingName: "",
+        showEditHistoryModal: false,
       }
     },
     components: {
       Modal,
+      EditHistory,
       Calculator
     },
     mounted(){
