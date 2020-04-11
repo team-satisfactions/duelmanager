@@ -12,13 +12,13 @@ export default {
     namespaced: true,
     state: {
         histories: {},
-        players: [],
+        player_names: {},
         duelId: null,
     },
     mutations: {
         initialize2Players(state) {
-            state.players = ["player1", "player2"];
-            state.players.forEach((player) => {
+            state.player_names = {"player1": "player1", "player2": "player2"};
+            Object.keys(state.player_names).forEach((player) => {
                 state.histories[player] = [{
                     value: DEFAULT_START_LIFE_POINT,
                     type: HistoryType.SET,
@@ -31,6 +31,9 @@ export default {
         }
     },
     getters: {
+        players(state) {
+            return Object.keys(state.player_names);
+        },
         life(state) {
             return (player) => {
                 let actives = state.histories[player].filter(b => b.active);
@@ -42,14 +45,14 @@ export default {
         },
         lifes(state, getters) {
             let ret = {};
-            state.players.forEach((player) => {
+            getters.players.forEach((player) => {
                 ret[player] = getters.life(player)
             });
             return ret;
         }
     },
     actions: {
-        addChangeHistory({ state }, [player, value]) {
+        addChangeHistory({ state, dispatch }, [player, value]) {
             let histories = { ...state.histories };
             let newValue = {
                 value,
@@ -58,13 +61,18 @@ export default {
             };
 
             histories[player] = [ ...state.histories[player], newValue ];
-            db.collection('duels')
-                .doc(state.duelId)
-                .update(histories)
+
+            return dispatch('getDuel').then((duel) => {
+                return duel.get('histories').update(histories);
+            });
         },
-        resetHistory({ state }) {
+        getDuel({ state }) {
+            return db.collection('duels')
+                .doc(state.duelId).get();
+        },
+        resetHistory({ state, getters }) {
             let histories = { ...state.histories };
-            state.players.forEach((player) => {
+            getters.players.forEach((player) => {
                 histories[player] = [{
                     value: DEFAULT_START_LIFE_POINT,
                     type: HistoryType.SET,
@@ -75,17 +83,33 @@ export default {
                 .doc(state.duelId)
                 .update(histories)
         },
-        createNewDuel: firestoreAction( ({ state, commit, bindFirestoreRef }) => {
+        createNewDuel: firestoreAction( ({ state, getters, commit, bindFirestoreRef }) => {
             commit('initialize2Players');
-            return db.collection('duels').add(state.histories).then((docRef) => {
-                commit('setDuelId', docRef.id);
-                return bindFirestoreRef('histories', docRef);
+            const hp = db.collection('histories').add(state.histories);
+            const pp = db.collection('player_names').add(state.player_names);
+            return Promise.all([hp, pp]).then(([historiesDocRef, playersDocRef]) => {
+                return db.collection('duels').add({
+                    histories: historiesDocRef,
+                    player_names: playersDocRef,
+                }).then((docRef) => {
+                    getters.players.forEach((player) => {
+                        state.histories[player].forEach((history) => {
+                            docRef.collection(player).add(history);
+                        });
+                    });
+                    commit('setDuelId', docRef.id);
+                    Promise.all([bindFirestoreRef('histories', historiesDocRef),
+                        bindFirestoreRef('player_names', playersDocRef)]);
+                });
             });
+
         }),
         enterExistDuel: firestoreAction( ({ commit, bindFirestoreRef }, duelId) => {
             commit('initialize2Players');
             commit('setDuelId', duelId);
-            return bindFirestoreRef('histories', db.collection('duels').doc(duelId));
+            return db.collection('duels').doc(duelId).get().then((doc) => {
+                return bindFirestoreRef('histories', doc.get("histories"));
+            });
         }),
     }
 }
