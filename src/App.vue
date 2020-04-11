@@ -114,6 +114,8 @@
           this.$refs['life-sound'].play();
         }
 
+        // TODO(higumachan): SoundManager的なやつを作る
+        document.getElementById("life").play();
         await new Promise((resolve)=>{
           let startTime = +(new Date())
 
