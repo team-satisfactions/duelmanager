@@ -10,44 +10,58 @@
         </div>
       </div>
       <div>
-        <button @click.stop="toss">toss</button>
+        <button v-if="!isToss" @click.stop="toss">toss</button>
+        <button v-else disabled>toss</button>
       </div>
     </div>
   </div>
 </template>
 <script>
+  import chancer from 'chancer'
   let dt = 20;
   export default {
+    data(){
+      return {
+        isToss: false,
+      }
+    },
     methods : {
-      toss(){
-        let roleN = Math.random() > 0.5 ? 4 : 5
-        console.log({roleN})
-        this.role(roleN)
+      async toss(){
+        if(this.isToss){ return }
+        this.isToss = true
+        let roleN = chancer.coinToss(4,5)
+        await this.role(roleN)
+        await new Promise(resolve=>{
+          setTimeout(resolve,1000)
+        })
+        this.isToss = false
       },
-      role(roleN=3){
+      async role(roleN=3){
         let time = 700
         let st = Date.now()
         let rad = 180 / (time / roleN)
 
-        let interval = ()=>{
-          let t = (Date.now() - st)
-          if(t >= time) {
+        await new Promise(resolve=>{
+          let interval = ()=>{
+            let t = (Date.now() - st)
+            if(t >= time) {
+              this.coinStyle({
+                transform : `rotateX(${(roleN*180)%360}deg)`,
+                bottom : '0px'
+              })
+              resolve()
+              return
+            }
             this.coinStyle({
-              transform : `rotateX(${(roleN*180)%360}deg)`,
-              bottom : '0px'
+              transform : `rotateX(${(t*rad)%360}deg)`,
+              bottom : Math.max(Math.sin((t / time) * Math.PI) * 200,0) + 'px'
             })
-            return
+            setTimeout(interval,dt)
           }
-          this.coinStyle({
-            transform : `rotateX(${(t*rad)%360}deg)`,
-            bottom : Math.max(Math.sin((t / time) * Math.PI) * 200,0) + 'px'
-          })
-          setTimeout(interval,dt)
-        }
-        interval()
+          interval()
+        })
       },
       coinStyle(newStyle = {}){
-        console.log(this.$refs['coin'])
         Object.entries(newStyle)
         .forEach(([key,value])=>{
           this.$refs['coin'].style[key] = value
