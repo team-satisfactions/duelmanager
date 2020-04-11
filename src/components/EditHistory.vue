@@ -5,7 +5,7 @@
                 <div @click.stop class="modal-container">
                     <ul>
                         <li v-for="(history, i) in this.histories[this.player]" :key="i">
-                            <span :class="history.active ? 'gray' : ''">{{history.value}}</span>
+                            <span :class="!history.active ? 'gray' : ''">{{history.value}}</span>
                             <input v-if="history.type !== 'SET'" id="check" type="checkbox" @click="changeActive($event, i)" :checked="history.active ? 'checked' : ''">
                         </li>
                     </ul>
@@ -62,6 +62,10 @@
     .modal-wrapper {
         display: table-cell;
         vertical-align: middle;
+    }
+
+    .gray {
+        color: darkgrey;
     }
 
     .modal-container {
