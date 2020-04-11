@@ -106,42 +106,46 @@
 
         let newLifes = this.lifes
 
-        let diffPlayers = Object.keys(this.viewLifes_).filter(key=>{
-          return newLifes[key] != this.viewLifes_[key];
-        });
-        let player   = diffPlayers[0]
-        let newValue = newLifes[player]
-        let nowValue = () => this.viewLifes_[player]
-        let oldValue = nowValue()
 
-        let time = 900;
-        let dt   = 50
-        let v = Math.floor(newValue - oldValue);
-        let myLogistic = x => 0.5 * (Math.tanh(Math.PI * ( 2 * x - 1)) + 1);
+        let effectPromises = Object.keys(this.viewLifes_).filter(key=>{
+          return newLifes[key] != this.viewLifes_[key]
+        }).map(key=>{
+          let player   = key
+          let newValue = newLifes[player]
+          let nowValue = () => this.viewLifes_[player]
+          let oldValue = nowValue()
 
-        if(this.$refs['life-sound']){
-          this.$refs['life-sound'].play();
-        }
+          let time = 900;
+          let dt   = 50
+          let v = Math.floor(newValue - oldValue);
+          let myLogistic = x => 0.5 * (Math.tanh(Math.PI * ( 2 * x - 1)) + 1);
 
-        // TODO(higumachan): SoundManager的なやつを作る
-        document.getElementById("life").play();
-        await new Promise((resolve)=>{
-          let startTime = +(new Date())
+          if(this.$refs['life-sound']){
+            // TODO(higumachan): SoundManager的なやつを作る
+            this.$refs['life-sound'].play();
+          }
 
-          let interval = () => {
-            let t = (+(new Date())-startTime)
-            let x = t / time
+          return new Promise((resolve)=>{
+            let startTime = +(new Date())
 
-            if(t > time) {
-              console.log('resolve()')
-              resolve()
-              return
-            }
-            this.viewLifes_[player] = Math.floor(oldValue + myLogistic(x) * v)
-            setTimeout(interval.bind(this),dt)
-          };
-          interval();
+            let interval = () => {
+              let t = (+(new Date())-startTime)
+              let x = t / time
+
+              if(t > time) {
+                console.log('resolve()')
+                resolve()
+                return
+              }
+              this.viewLifes_[player] = Math.floor(oldValue + myLogistic(x) * v)
+              setTimeout(interval.bind(this),dt)
+            };
+            interval();
+          })
         })
+
+        await Promise.all(effectPromises)
+
         this.isRealLife = true
         this.viewLifes_ = newLifes
       },
