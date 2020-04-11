@@ -3,7 +3,8 @@
     <audio id="life" preload="auto" ref="life-sound">
       <source src="./assets/SE/life-full.wav" type="audio/mp3">
     </audio>
-    <img alt="Vue logo" src="./assets/logo.png" @click="resetHistory()">
+    <img class="logo" alt="Vue logo" src="./assets/logo.png" @click="resetHistory()">
+    <img class="logo" alt="Coin logo" src="./assets/coin.png" @click="isShowCoin = true">
     <div style="display:flex; justify-content: space-around;">
       <div v-for="(life,player) in viewLifes()" :key="player" style="position:relative;">
         <img :src="'https://github.com/' + playerNames[player] + '.png'" :alt="player" style="width:400px;">
@@ -20,6 +21,7 @@
       </div>
     </div>
     <Calculator :isShow.sync="isShowCalc" @result="calcLife"></Calculator>
+    <CoinToss :isShow.sync="isShowCoin"></CoinToss>
     <Modal v-if="showPlayerNameModal" @close="showPlayerNameModal = false">
       <h3 slot="header">Playerの名前を設定してください</h3>
       <div slot="body">
@@ -34,6 +36,7 @@
 
 <script>
   import Calculator from './components/Calculator.vue'
+  import CoinToss from './components/CoinToss.vue'
   import { createNamespacedHelpers } from 'vuex'
   import Modal from "@/components/Modal";
   import EditHistory from "@/components/EditHistory";
@@ -45,6 +48,7 @@
       return {
         calcPlayer : '',
         isShowCalc : false,
+        isShowCoin : false,
         isRealLife : true,
         viewLifes_ : null,
         editingPlayer: null,
@@ -56,6 +60,7 @@
     components: {
       Modal,
       EditHistory,
+      CoinToss,
       Calculator
     },
     mounted(){
@@ -173,6 +178,9 @@
   body {
     height: 100vh;
     margin: 0px;
+  }
+  .logo {
+    height: 25vh;
   }
   .life-box {
     position: absolute;
