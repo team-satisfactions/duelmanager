@@ -1,4 +1,4 @@
-import {db} from "@/plugins/firebase";
+import { db } from "@/plugins/firebase";
 
 export default {
   namespaced: true,
@@ -23,8 +23,8 @@ export default {
       while (!state.duelId) {
         await new Promise((resolve) => {
           setTimeout(resolve, 1000);
-        })
+        });
       }
-    }
+    },
   },
 };

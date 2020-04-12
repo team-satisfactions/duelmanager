@@ -25,7 +25,6 @@ export default {
         ];
       });
     },
-
   },
   getters: {
     players(state) {

@@ -19,26 +19,30 @@ export default {
       });
     },
     async subscribeFirestoreCoinRolls({ rootGetters, commit, dispatch }) {
-      await dispatch('duel/waitInitialized', null, { root: true});
+      await dispatch("duel/waitInitialized", null, { root: true });
       const duelRef = rootGetters["duel/duelRef"];
       const now = firebase.firestore.Timestamp.now();
-      duelRef.collection("coinRolls").orderBy('timestamp', "desc").where("timestamp", '>', now).limit(1).onSnapshot(async (collectionSnapshot) => {
-        if (collectionSnapshot.empty) {
-          return;
-        }
-        const snapshot = collectionSnapshot.docs[0];
-        commit('setCoinRolls', snapshot.get("coinFace"));
-      });
+      duelRef
+        .collection("coinRolls")
+        .orderBy("timestamp", "desc")
+        .where("timestamp", ">", now)
+        .limit(1)
+        .onSnapshot(async (collectionSnapshot) => {
+          if (collectionSnapshot.empty) {
+            return;
+          }
+          const snapshot = collectionSnapshot.docs[0];
+          commit("setCoinRolls", snapshot.get("coinFace"));
+        });
     },
     rolls({ state, dispatch }) {
-      return dispatch("duel/getDuel", null, { root: true })
-        .then((duel) => {
-          duel.collection("coinRolls").on('child_added', (childSnapshot) => {
-            const coinRolls = [...state.coinRolls];
-            coinRolls.push(childSnapshot);
-            state.coinRolls = coinRolls;
-          });
+      return dispatch("duel/getDuel", null, { root: true }).then((duel) => {
+        duel.collection("coinRolls").on("child_added", (childSnapshot) => {
+          const coinRolls = [...state.coinRolls];
+          coinRolls.push(childSnapshot);
+          state.coinRolls = coinRolls;
         });
+      });
     },
   },
 };
