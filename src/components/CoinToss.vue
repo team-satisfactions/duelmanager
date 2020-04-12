@@ -22,7 +22,6 @@
 <script>
 import chancer from "chancer";
 import { createNamespacedHelpers } from "vuex";
-import firebase from "firebase";
 const { mapGetters: mapDuelGetters, mapActions: mapDuelActions, } = createNamespacedHelpers("duel");
 const { mapActions: mapCoinActions, } = createNamespacedHelpers("coin");
 
@@ -37,31 +36,21 @@ export default {
   data() {
     return {
       isToss: false,
+      unsubscribe: null,
     };
   },
   mounted() {
-    (async() => {
-      await this.waitInitialized();
-      console.log(this.$store.state.duel);
-      const duelRef = this.duelRef;
-      const now = firebase.firestore.Timestamp.now();
-      console.log(duelRef.collection);
-      duelRef.collection("coinRolls").orderBy('timestamp', "desc").where("timestamp", '>', now).limit(1).onSnapshot(async (collectionSnapshot) => {
-        console.log(collectionSnapshot.empty);
-        if (collectionSnapshot.empty) {
-          return;
-        }
-        console.log(collectionSnapshot.docs[0]);
-        const snapshot = collectionSnapshot.docs[0];
-        this.$store.commit('addCoinRolls', snapshot.coinFace);
-
+    this.subscribeFirestoreCoinRolls();
+    this.unsubscribe = this.$store.subscribe(async (mutation, state) => {
+      if (mutation.type === 'coin/setCoinRolls') {
         this.open();
-        this.$nextTick(async () => {
-          await this.role(this.coinRolls(snapshot.coinFace));
-          this.isToss = false;
-        });
-      });
-    })();
+        await this.$nextTick();
+        this.role(this.coinRolls(state.coin.lastCoinFace));
+      }
+    })
+  },
+  destroyed() {
+    this.unsubscribe();
   },
   methods: {
     async toss() {
@@ -72,13 +61,6 @@ export default {
       const coinFace = chancer.coinToss(true, false);
 
       await this.tossToShare(coinFace);
-      /*
-      await this.role(this.coinRolls(coinFace));
-      await new Promise((resolve) => {
-        setTimeout(resolve, 500);
-      });
-      this.isToss = false;
-       */
     },
     async role(roleN = 3) {
       this.isToss = true;
@@ -118,13 +100,17 @@ export default {
     close() {
       this.$emit("update:isShow", false);
     },
-    coinRolls(coin) {
-      return coin ? 4 : 5;
+    coinRolls(coinFace) {
+      if (coinFace === undefined) {
+        console.error("undefined");
+      }
+      return coinFace ? 4 : 5;
     },
     ...mapDuelActions([
       'waitInitialized',
     ]),
     ...mapCoinActions([
+      'subscribeFirestoreCoinRolls',
       'tossToShare',
     ]),
   },

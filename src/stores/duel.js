@@ -20,13 +20,11 @@ export default {
       return db.collection("duels").doc(state.duelId).get();
     },
     async waitInitialized({ state }) {
-      console.log(state.duelId);
       while (!state.duelId) {
         await new Promise((resolve) => {
           setTimeout(resolve, 1000);
         })
       }
-      console.log(state.duelId);
     }
   },
 };

@@ -3,39 +3,31 @@ import firebase from "firebase";
 export default {
   namespaced: true,
   state: {
-    coinFaces: [],
+    lastCoinFace: null,
   },
   mutations: {
-    addCoinRolls(state, coinFace) {
-      const coinFaces = [...state.coinFaces];
-      coinFaces.push(coinFace);
-      state.coinFaces = coinFaces;
+    setCoinRolls(state, coinFace) {
+      state.lastCoinFace = coinFace;
     },
   },
   actions: {
     async tossToShare({ rootGetters }, coinFace) {
       const duelRef = rootGetters["duel/duelRef"];
-      console.log(duelRef);
-      console.log(coinFace);
       return duelRef.collection("coinRolls").add({
         coinFace: coinFace,
         timestamp: firebase.firestore.Timestamp.now(),
       });
     },
-    async subscribeFirestoreCoinRolls({ dispatch }) {
-      await dispatch('waitInitialized');
-      console.log(this.$store.state.duel);
-      const duelRef = this.duelRef;
+    async subscribeFirestoreCoinRolls({ rootGetters, commit, dispatch }) {
+      await dispatch('duel/waitInitialized', null, { root: true});
+      const duelRef = rootGetters["duel/duelRef"];
       const now = firebase.firestore.Timestamp.now();
-      console.log(duelRef.collection);
       duelRef.collection("coinRolls").orderBy('timestamp', "desc").where("timestamp", '>', now).limit(1).onSnapshot(async (collectionSnapshot) => {
-        console.log(collectionSnapshot.empty);
         if (collectionSnapshot.empty) {
           return;
         }
-        console.log(collectionSnapshot[0]);
-        const snapshot = collectionSnapshot[0];
-        this.$store.commit('addCoinRolls', snapshot.coinFace);
+        const snapshot = collectionSnapshot.docs[0];
+        commit('setCoinRolls', snapshot.get("coinFace"));
       });
     },
     rolls({ state, dispatch }) {

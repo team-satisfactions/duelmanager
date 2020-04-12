@@ -33,7 +33,6 @@ export default {
   props: ["player"],
   methods: {
     changeActive(event, index) {
-      console.log(event.target.checked);
       this.modifyHistoryActive([
         this.player,
         index,
