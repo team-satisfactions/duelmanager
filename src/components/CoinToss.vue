@@ -22,7 +22,6 @@
 <script>
 import chancer from "chancer";
 import { createNamespacedHelpers } from "vuex";
-import { waitFor } from "@/lib/promiseTools";
 const {
   mapGetters: mapDuelGetters,
   mapActions: mapDuelActions,
