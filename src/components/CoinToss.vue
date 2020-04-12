@@ -21,6 +21,11 @@
 </template>
 <script>
 import chancer from "chancer";
+import { createNamespacedHelpers } from "vuex";
+import firebase from "firebase";
+const { mapGetters: mapDuelGetters, mapActions: mapDuelActions, } = createNamespacedHelpers("duel");
+const { mapActions: mapCoinActions, } = createNamespacedHelpers("coin");
+
 let dt = 20;
 export default {
   props: {
@@ -34,20 +39,49 @@ export default {
       isToss: false,
     };
   },
+  mounted() {
+    (async() => {
+      await this.waitInitialized();
+      console.log(this.$store.state.duel);
+      const duelRef = this.duelRef;
+      const now = firebase.firestore.Timestamp.now();
+      console.log(duelRef.collection);
+      duelRef.collection("coinRolls").orderBy('timestamp', "desc").where("timestamp", '>', now).limit(1).onSnapshot(async (collectionSnapshot) => {
+        console.log(collectionSnapshot.empty);
+        if (collectionSnapshot.empty) {
+          return;
+        }
+        console.log(collectionSnapshot.docs[0]);
+        const snapshot = collectionSnapshot.docs[0];
+        this.$store.commit('addCoinRolls', snapshot.coinFace);
+
+        this.open();
+        this.$nextTick(async () => {
+          await this.role(this.coinRolls(snapshot.coinFace));
+          this.isToss = false;
+        });
+      });
+    })();
+  },
   methods: {
     async toss() {
       if (this.isToss) {
         return;
       }
       this.isToss = true;
-      let roleN = chancer.coinToss(4, 5);
-      await this.role(roleN);
+      const coinFace = chancer.coinToss(true, false);
+
+      await this.tossToShare(coinFace);
+      /*
+      await this.role(this.coinRolls(coinFace));
       await new Promise((resolve) => {
         setTimeout(resolve, 500);
       });
       this.isToss = false;
+       */
     },
     async role(roleN = 3) {
+      this.isToss = true;
       let time = 700;
       let st = Date.now();
       let rad = 180 / (time / roleN);
@@ -60,6 +94,7 @@ export default {
               transform: `rotateX(${(roleN * 180) % 360}deg)`,
               bottom: "0px",
             });
+            this.isToss = false;
             resolve();
             return;
           }
@@ -77,10 +112,27 @@ export default {
         this.$refs["coin"].style[key] = value;
       });
     },
+    open() {
+      this.$emit("update:isShow", true);
+    },
     close() {
       this.$emit("update:isShow", false);
     },
+    coinRolls(coin) {
+      return coin ? 4 : 5;
+    },
+    ...mapDuelActions([
+      'waitInitialized',
+    ]),
+    ...mapCoinActions([
+      'tossToShare',
+    ]),
   },
+  computed: {
+    ...mapDuelGetters([
+      'duelRef'
+    ]),
+  }
 };
 </script>
 <style scoped>

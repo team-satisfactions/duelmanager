@@ -11,7 +11,6 @@ export default {
   state: {
     histories: {},
     playerNames: {},
-    duelId: null,
   },
   mutations: {
     initialize2Players(state) {
@@ -26,9 +25,7 @@ export default {
         ];
       });
     },
-    setDuelId(state, duelId) {
-      state.duelId = duelId;
-    },
+
   },
   getters: {
     players(state) {
@@ -78,14 +75,11 @@ export default {
     async setPlayerName({ state, dispatch }, [player, name]) {
       const playerNames = { ...state.playerNames };
       playerNames[player] = name;
-      const duel = await dispatch("getDuel");
+      const duel = await dispatch("duel/getDuel", null, { root: true });
       return duel.get("playerNames").update(playerNames);
     },
-    async getDuel({ state }) {
-      return db.collection("duels").doc(state.duelId).get();
-    },
     async updateHistories({ dispatch }, histories) {
-      const duel = await dispatch("getDuel");
+      const duel = await dispatch("duel/getDuel", null, { root: true });
       return duel.get("histories").update(histories);
     },
     async resetHistory({ state, dispatch, getters }) {
@@ -120,7 +114,7 @@ export default {
                     docRef.collection(player).add(history);
                   });
                 });
-                commit("setDuelId", docRef.id);
+                commit("duel/setDuelId", docRef.id, { root: true });
                 Promise.all([
                   bindFirestoreRef("histories", historiesDocRef),
                   bindFirestoreRef("playerNames", playersDocRef),
@@ -133,8 +127,8 @@ export default {
     enterExistDuel: firestoreAction(
       ({ commit, dispatch, bindFirestoreRef }, duelId) => {
         commit("initialize2Players");
-        commit("setDuelId", duelId);
-        return dispatch("getDuel").then((duel) => {
+        commit("duel/setDuelId", duelId, { root: true });
+        return dispatch("duel/getDuel", null, { root: true }).then((duel) => {
           return Promise.all([
             bindFirestoreRef("histories", duel.get("histories")),
             bindFirestoreRef("playerNames", duel.get("playerNames")),
