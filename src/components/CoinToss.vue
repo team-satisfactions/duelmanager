@@ -22,6 +22,7 @@
 <script>
 import chancer from "chancer";
 import { createNamespacedHelpers } from "vuex";
+import {waitFor} from "@/lib/promiseTools";
 const {
   mapGetters: mapDuelGetters,
   mapActions: mapDuelActions,
@@ -49,7 +50,6 @@ export default {
         this.open();
         await this.$nextTick();
         this.role(this.coinRolls(state.coin.lastCoinFace));
-        this.close();
       }
     });
   },
@@ -72,26 +72,20 @@ export default {
       let st = Date.now();
       let rad = 180 / (time / roleN);
 
-      await new Promise((resolve) => {
-        let interval = () => {
-          let t = Date.now() - st;
-          if (t >= time) {
-            this.coinStyle({
-              transform: `rotateX(${(roleN * 180) % 360}deg)`,
-              bottom: "0px",
-            });
-            this.isToss = false;
-            resolve();
-            return;
-          }
-          this.coinStyle({
-            transform: `rotateX(${(t * rad) % 360}deg)`,
-            bottom: Math.max(Math.sin((t / time) * Math.PI) * 200, 0) + "px",
-          });
-          setTimeout(interval, dt);
-        };
-        interval();
+      let t = Date.now() - st;
+      while (t < time) {
+        this.coinStyle({
+          transform: `rotateX(${(t * rad) % 360}deg)`,
+          bottom: Math.max(Math.sin((t / time) * Math.PI) * 200, 0) + "px",
+        });
+        await waitFor(dt);
+        t = Date.now() - st;
+      }
+      this.coinStyle({
+        transform: `rotateX(${(roleN * 180) % 360}deg)`,
+        bottom: "0px",
       });
+      this.isToss = false;
     },
     coinStyle(newStyle = {}) {
       Object.entries(newStyle).forEach(([key, value]) => {
