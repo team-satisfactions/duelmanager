@@ -50,7 +50,6 @@ export default {
         this.open();
         await this.$nextTick();
         this.role(this.coinRolls(state.coin.lastCoinFace));
-        await waitFor(1000);
         this.close();
       }
     });
