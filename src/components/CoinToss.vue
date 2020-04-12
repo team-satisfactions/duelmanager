@@ -21,6 +21,14 @@
 </template>
 <script>
 import chancer from "chancer";
+import { createNamespacedHelpers } from "vuex";
+import {waitFor} from "@/lib/promiseTools";
+const {
+  mapGetters: mapDuelGetters,
+  mapActions: mapDuelActions,
+} = createNamespacedHelpers("duel");
+const { mapActions: mapCoinActions } = createNamespacedHelpers("coin");
+
 let dt = 20;
 export default {
   props: {
@@ -32,7 +40,21 @@ export default {
   data() {
     return {
       isToss: false,
+      unsubscribe: null,
     };
+  },
+  mounted() {
+    this.subscribeFirestoreCoinRolls();
+    this.unsubscribe = this.$store.subscribe(async (mutation, state) => {
+      if (mutation.type === "coin/setCoinRolls") {
+        this.open();
+        await this.$nextTick();
+        this.role(this.coinRolls(state.coin.lastCoinFace));
+      }
+    });
+  },
+  destroyed() {
+    this.unsubscribe();
   },
   methods: {
     async toss() {
@@ -40,46 +62,53 @@ export default {
         return;
       }
       this.isToss = true;
-      let roleN = chancer.coinToss(4, 5);
-      await this.role(roleN);
-      await new Promise((resolve) => {
-        setTimeout(resolve, 500);
-      });
-      this.isToss = false;
+      const coinFace = chancer.coinToss(true, false);
+
+      await this.tossToShare(coinFace);
     },
     async role(roleN = 3) {
+      this.isToss = true;
       let time = 700;
       let st = Date.now();
       let rad = 180 / (time / roleN);
 
-      await new Promise((resolve) => {
-        let interval = () => {
-          let t = Date.now() - st;
-          if (t >= time) {
-            this.coinStyle({
-              transform: `rotateX(${(roleN * 180) % 360}deg)`,
-              bottom: "0px",
-            });
-            resolve();
-            return;
-          }
-          this.coinStyle({
-            transform: `rotateX(${(t * rad) % 360}deg)`,
-            bottom: Math.max(Math.sin((t / time) * Math.PI) * 200, 0) + "px",
-          });
-          setTimeout(interval, dt);
-        };
-        interval();
+      let t = Date.now() - st;
+      while (t < time) {
+        this.coinStyle({
+          transform: `rotateX(${(t * rad) % 360}deg)`,
+          bottom: Math.max(Math.sin((t / time) * Math.PI) * 200, 0) + "px",
+        });
+        await waitFor(dt);
+        t = Date.now() - st;
+      }
+      this.coinStyle({
+        transform: `rotateX(${(roleN * 180) % 360}deg)`,
+        bottom: "0px",
       });
+      this.isToss = false;
     },
     coinStyle(newStyle = {}) {
       Object.entries(newStyle).forEach(([key, value]) => {
         this.$refs["coin"].style[key] = value;
       });
     },
+    open() {
+      this.$emit("update:isShow", true);
+    },
     close() {
       this.$emit("update:isShow", false);
     },
+    coinRolls(coinFace) {
+      if (coinFace === undefined) {
+        console.error("undefined");
+      }
+      return coinFace ? 4 : 5;
+    },
+    ...mapDuelActions(["waitInitialized"]),
+    ...mapCoinActions(["subscribeFirestoreCoinRolls", "tossToShare"]),
+  },
+  computed: {
+    ...mapDuelGetters(["duelRef"]),
   },
 };
 </script>

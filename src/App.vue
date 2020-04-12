@@ -112,7 +112,7 @@ export default {
     const hash = location.hash.slice(1);
     if (!hash) {
       this.createNewDuel().then(() => {
-        location.hash = "#" + this.$store.state.life.duelId;
+        location.hash = "#" + this.$store.state.duel.duelId;
       });
     } else {
       this.enterExistDuel(hash);
