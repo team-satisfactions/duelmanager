@@ -150,14 +150,14 @@ export default {
 }
 .front {
   position: absolute;
-  background: #ffff7f;
+  background: #ffffff;
   background-image: url(../assets/coin.png);
   background-size: 100px;
 }
 .back {
   font-size: 16px;
   position: absolute;
-  background: #ffff7f;
+  background: #ffffff;
   transform: rotateX(180deg) translateZ(2px);
   background-image: url(../assets/coin-back.png);
   background-size: 100px;
