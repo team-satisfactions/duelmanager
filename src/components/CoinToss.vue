@@ -7,8 +7,8 @@
       <div style="display: flex;">
         <div class="coin-wrap">
           <div class="coin" ref="coin">
-            <div class="front">表</div>
-            <div class="back">裏</div>
+            <div class="front"></div>
+            <div class="back">back</div>
           </div>
         </div>
       </div>
@@ -150,11 +150,16 @@ export default {
 }
 .front {
   position: absolute;
-  background: rgba(255, 0, 0, 0.8);
+  background: #ffff7f;
+  background-image: url(../assets/coin.png);
+  background-size: 100px;
 }
 .back {
+  font-size: 16px;
   position: absolute;
-  background: rgba(0, 0, 255, 0.8);
+  background: #ffff7f;
   transform: rotateX(180deg) translateZ(2px);
+  background-image: url(../assets/coin-back.png);
+  background-size: 100px;
 }
 </style>
