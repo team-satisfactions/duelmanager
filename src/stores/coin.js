@@ -4,10 +4,12 @@ export default {
   namespaced: true,
   state: {
     lastCoinFace: null,
+    timestamp : null
   },
   mutations: {
-    setCoinRolls(state, coinFace) {
+    setCoinRolls(state, {coinFace,timestamp}) {
       state.lastCoinFace = coinFace;
+      state.timestamp = timestamp;
     },
   },
   actions: {
@@ -32,7 +34,10 @@ export default {
             return;
           }
           const snapshot = collectionSnapshot.docs[0];
-          commit("setCoinRolls", snapshot.get("coinFace"));
+          commit("setCoinRolls", {
+            coinFace: snapshot.get("coinFace"),
+            timestamp:snapshot.get("timestamp")
+          });
         });
     },
     rolls({ state, dispatch }) {

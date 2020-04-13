@@ -22,12 +22,11 @@
 <script>
 import chancer from "chancer";
 import { createNamespacedHelpers } from "vuex";
-import {waitFor} from "@/lib/promiseTools";
+import { waitFor } from "@/lib/promiseTools";
 const {
-  mapGetters: mapDuelGetters,
-  mapActions: mapDuelActions,
-} = createNamespacedHelpers("duel");
-const { mapActions: mapCoinActions } = createNamespacedHelpers("coin");
+  mapState: mapCoinState,
+  mapActions: mapCoinActions
+} = createNamespacedHelpers("coin");
 
 let dt = 20;
 export default {
@@ -35,28 +34,30 @@ export default {
     isShow: {
       type: Boolean,
       default: false,
-    },
+    }
   },
   data() {
     return {
       isToss: false,
-      unsubscribe: null,
     };
   },
   mounted() {
     this.subscribeFirestoreCoinRolls();
-    this.unsubscribe = this.$store.subscribe(async (mutation, state) => {
-      if (mutation.type === "coin/setCoinRolls") {
-        this.open();
-        await this.$nextTick();
-        this.role(this.coinRolls(state.coin.lastCoinFace));
-      }
-    });
   },
-  destroyed() {
-    this.unsubscribe();
+  watch : {
+    async timestamp(){
+      await this.autoAnimation()
+    },
+    async lastCoinFace(){
+      await this.autoAnimation()
+    }
   },
   methods: {
+    async autoAnimation(){
+      this.open();
+      await this.$nextTick();
+      await this.role(this.coinRolls(this.lastCoinFace));
+    },
     async toss() {
       if (this.isToss) {
         return;
@@ -104,11 +105,10 @@ export default {
       }
       return coinFace ? 4 : 5;
     },
-    ...mapDuelActions(["waitInitialized"]),
     ...mapCoinActions(["subscribeFirestoreCoinRolls", "tossToShare"]),
   },
   computed: {
-    ...mapDuelGetters(["duelRef"]),
+    ...mapCoinState(["lastCoinFace","timestamp"]),
   },
 };
 </script>
