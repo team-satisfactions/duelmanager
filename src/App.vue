@@ -3,18 +3,27 @@
     <audio id="life" preload="auto" ref="life-sound">
       <source src="./assets/SE/life-full.wav" type="audio/mp3" />
     </audio>
-    <img
-      class="logo"
-      alt="Vue logo"
-      src="./assets/logo.png"
-      @click="resetHistory()"
-    />
-    <img
-      class="logo"
-      alt="Coin logo"
-      src="./assets/coin.png"
-      @click="isShowCoin = true"
-    />
+    <div class="header">
+      <div class="logo-wrapper">
+        <img
+          class="logo"
+          alt="Vue logo"
+          src="./assets/logo.png"
+          @click="resetHistory()"
+        />
+        <img
+          class="logo-mini"
+          alt="Vue logo"
+          src="./assets/logo-mini.png"
+        />
+      </div>
+      <img
+        class="logo"
+        alt="Coin logo"
+        src="./assets/coin.png"
+        @click="isShowCoin = true"
+      />
+    </div>
     <div style="display: flex; justify-content: space-around;">
       <div
         v-for="(life, player) in viewLifes()"
@@ -222,8 +231,24 @@ body {
   height: 100vh;
   margin: 0px;
 }
+.header {
+  display:flex;
+  justify-content:center;
+}
+.logo-wrapper {
+  position:relative;
+}
 .logo {
   height: 25vh;
+}
+.logo-mini {
+  position: absolute;
+  height: 25vh ;
+  left: 0;
+  filter: drop-shadow(2px 2px 1px rgba(0,0,0,0.8));
+}
+.logo-mini:active {
+  filter: drop-shadow(0px 0px 1px rgba(0,0,0,1));
 }
 .life-box {
   position: absolute;
