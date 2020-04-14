@@ -4,12 +4,13 @@
       <source src="./assets/SE/life-full.wav" type="audio/mp3" />
     </audio>
     <div class="header">
-      <div class="logo-wrapper">
+      <div
+        class="logo-wrapper"
+        @click="resetHistory()">
         <img
           class="logo"
           alt="Vue logo"
           src="./assets/logo.png"
-          @click="resetHistory()"
         />
         <img
           class="logo-mini"
