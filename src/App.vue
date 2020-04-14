@@ -67,6 +67,8 @@
         </div>
       </div>
     </div>
+    <h3 class="url-head">URLを共有して友達とデュエルだ！</h3>
+    <p class="url-text">{{ url }}</p>
     <Calculator :isShow.sync="isShowCalc" @result="calcLife"></Calculator>
     <CoinToss :isShow.sync="isShowCoin"></CoinToss>
     <Modal v-if="showPlayerNameModal" @close="showPlayerNameModal = false">
@@ -110,6 +112,7 @@ export default {
       showPlayerNameModal: false,
       editingName: "",
       showEditHistoryModal: false,
+      url: '',
     };
   },
   components: {
@@ -127,6 +130,7 @@ export default {
     } else {
       this.enterExistDuel(hash);
     }
+    this.url = window.location
   },
   computed: {
     ...mapState(["playerNames"]),
@@ -262,6 +266,12 @@ body {
   display: flex;
   justify-content: space-between;
   font-size: 86px;
+}
+.url-head {
+  margin-bottom:0px;
+}
+.url-text {
+  margin-top:0px;
 }
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
