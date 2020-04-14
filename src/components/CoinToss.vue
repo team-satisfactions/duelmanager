@@ -7,8 +7,8 @@
       <div style="display: flex;">
         <div class="coin-wrap">
           <div class="coin" ref="coin">
-            <div class="front">表</div>
-            <div class="back">裏</div>
+            <div class="front"></div>
+            <div class="back">back</div>
           </div>
         </div>
       </div>
@@ -22,12 +22,11 @@
 <script>
 import chancer from "chancer";
 import { createNamespacedHelpers } from "vuex";
-import {waitFor} from "@/lib/promiseTools";
+import { waitFor } from "@/lib/promiseTools";
 const {
-  mapGetters: mapDuelGetters,
-  mapActions: mapDuelActions,
-} = createNamespacedHelpers("duel");
-const { mapActions: mapCoinActions } = createNamespacedHelpers("coin");
+  mapState: mapCoinState,
+  mapActions: mapCoinActions
+} = createNamespacedHelpers("coin");
 
 let dt = 20;
 export default {
@@ -35,28 +34,30 @@ export default {
     isShow: {
       type: Boolean,
       default: false,
-    },
+    }
   },
   data() {
     return {
       isToss: false,
-      unsubscribe: null,
     };
   },
   mounted() {
     this.subscribeFirestoreCoinRolls();
-    this.unsubscribe = this.$store.subscribe(async (mutation, state) => {
-      if (mutation.type === "coin/setCoinRolls") {
-        this.open();
-        await this.$nextTick();
-        this.role(this.coinRolls(state.coin.lastCoinFace));
-      }
-    });
   },
-  destroyed() {
-    this.unsubscribe();
+  watch : {
+    async timestamp(){
+      await this.autoAnimation()
+    },
+    async lastCoinFace(){
+      await this.autoAnimation()
+    }
   },
   methods: {
+    async autoAnimation(){
+      this.open();
+      await this.$nextTick();
+      await this.role(this.coinRolls(this.lastCoinFace));
+    },
     async toss() {
       if (this.isToss) {
         return;
@@ -104,11 +105,10 @@ export default {
       }
       return coinFace ? 4 : 5;
     },
-    ...mapDuelActions(["waitInitialized"]),
     ...mapCoinActions(["subscribeFirestoreCoinRolls", "tossToShare"]),
   },
   computed: {
-    ...mapDuelGetters(["duelRef"]),
+    ...mapCoinState(["lastCoinFace","timestamp"]),
   },
 };
 </script>
@@ -150,11 +150,16 @@ export default {
 }
 .front {
   position: absolute;
-  background: rgba(255, 0, 0, 0.8);
+  background: #ffffff;
+  background-image: url(../assets/coin.png);
+  background-size: 100px;
 }
 .back {
+  font-size: 16px;
   position: absolute;
-  background: rgba(0, 0, 255, 0.8);
+  background: #ffffff;
   transform: rotateX(180deg) translateZ(2px);
+  background-image: url(../assets/coin-back.png);
+  background-size: 100px;
 }
 </style>
