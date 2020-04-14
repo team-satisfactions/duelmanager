@@ -2,19 +2,15 @@
 
 ## Set firebase information
 
-`config/firebase-config.js`に対してFirebaseの設定を行ってください。
+`.env.local`を作成してください
+```
+$ touch .env.local
+```
+
+`.env.local`に対してFirebaseの設定を行ってください。
 
 ```
-{
-        API_KEY: '...',
-        AUTH_DOMAIN: '...',
-        DATABASE_URL: '...',
-        PROJECT_ID: '...',
-        STORAGE_BUCKET: '...',
-        MESSAGING_SENDERID: '...',
-        APP_ID: '...',
-        MESUREMENT_Id: '...' 
-    }
+VUE_APP_FIREBASE_CONFIG={"apiKey": "<YOUR_API_KEY>","authDomain": "<YOUR_DOMAIN>", "databaseURL": "<YOUR_DATABASE_URL>", "projectId": "<YOUR...>", "storageBucket": "<YOUR_BUCKET_NAME>", "messagingSenderId": "<YOUR...>", "appId": "<YOUR...>", "measurementId": "<YOUR...>" }   }
 ```
 
 ## Project setup
