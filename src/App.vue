@@ -186,10 +186,10 @@ export default {
           let v = Math.floor(newValue - oldValue);
           let myLogistic = (x) => 0.5 * (Math.tanh(Math.PI * (2 * x - 1)) + 1);
 
-          if (false && this.$refs["life-sound"]) {
-            // TODO(higumachan): SoundManager的なやつを作る
-            this.$refs["life-sound"].play();
-          }
+          //if (this.$refs["life-sound"]) {
+          //  // TODO(higumachan): SoundManager的なやつを作る
+          //  this.$refs["life-sound"].play();
+          //}
 
           return new Promise((resolve) => {
             let startTime = +new Date();
