@@ -1,7 +1,6 @@
 <template>
   <div id="app">
     <audio id="life" preload="auto" ref="life-sound">
-      <source src="./assets/SE/life-full.wav" type="audio/mp3" />
     </audio>
     <div class="header">
       <div
@@ -187,7 +186,7 @@ export default {
           let v = Math.floor(newValue - oldValue);
           let myLogistic = (x) => 0.5 * (Math.tanh(Math.PI * (2 * x - 1)) + 1);
 
-          if (this.$refs["life-sound"]) {
+          if (false && this.$refs["life-sound"]) {
             // TODO(higumachan): SoundManager的なやつを作る
             this.$refs["life-sound"].play();
           }
