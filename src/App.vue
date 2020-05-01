@@ -77,7 +77,15 @@
           type="text"
           @keypress.enter="submitPlayerNameModel"
           v-model="editingName"
+          autocomplete="on"
+          list="player-history"
         />
+        <datalist id="player-history">
+          <option value="higumachan"></option>
+          <option value="amanoese"></option>
+          <option value="goya813"></option>
+          <option value="archiba"></option>
+        </datalist>
         <button @click="submitPlayerNameModel">OK</button>
       </div>
       <div slot="footer"></div>
