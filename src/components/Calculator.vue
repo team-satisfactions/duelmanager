@@ -35,6 +35,7 @@ export default {
     return {
       result: 0,
       sign: false,
+      updateStep: 1000,
     };
   },
   methods: {
@@ -71,6 +72,31 @@ export default {
       this.init();
     },
   },
+  mounted() {
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Shift') {
+        this.updateStep = 100;
+      }
+    });
+    window.addEventListener('keyup', (e) => {
+      console.log(e.key);
+      if (e.key === 'Shift') {
+        this.updateStep = 1000;
+      }
+      if (e.key === 'ArrowUp') {
+        this.result = Math.max(this.result + this.updateStep, 0);
+      }
+      if (e.key === 'ArrowDown') {
+        this.result = Math.max(this.result - this.updateStep, 0);
+      }
+      if (e.key === "Enter") {
+        this.returnResult();
+      }
+      if (e.key === "Escape") {
+        this.close();
+      }
+    });
+  }
 };
 </script>
 <style>

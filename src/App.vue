@@ -24,7 +24,8 @@
         @click="isShowCoin = true"
       />
     </div>
-    <div style="display: flex; justify-content: space-around;">
+    <div style="display: flex; justify-content: space-around;"
+         @keypress.left="openCalc(Object.keys(playerNames)[0]);">
       <div
         v-for="(life, player) in viewLifes()"
         :key="player"
@@ -138,6 +139,16 @@ export default {
       this.enterExistDuel(hash);
     }
     this.url = window.location
+
+    window.addEventListener('keyup', (e) => {
+      console.log(e.key);
+      if (e.key === 'ArrowLeft') {
+        this.openCalc(Object.keys(this.playerNames)[1]);
+      }
+      if (e.key === 'ArrowRight') {
+        this.openCalc(Object.keys(this.playerNames)[0]);
+      }
+    });
   },
   computed: {
     ...mapState(["playerNames"]),
