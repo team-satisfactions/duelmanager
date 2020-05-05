@@ -69,7 +69,7 @@
     </div>
     <h3 class="url-head">URLを共有して友達とデュエルだ！</h3>
     <p class="url-text">{{ url }}</p>
-    <Calculator :isShow.sync="isShowCalc" @result="calcLife"></Calculator>
+    <Calculator :player="calcPlayer" :isShow.sync="isShowCalc" @result="calcLife"></Calculator>
     <CoinToss :isShow.sync="isShowCoin"></CoinToss>
     <Modal v-if="showPlayerNameModal" @close="showPlayerNameModal = false">
       <h3 slot="header">Playerの名前を設定してください</h3>
@@ -163,7 +163,6 @@ export default {
       "setPlayerName",
     ]),
     openCalc(player) {
-      console.log({ player });
       this.calcPlayer = player;
       this.isShowCalc = true;
     },

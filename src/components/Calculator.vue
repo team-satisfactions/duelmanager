@@ -1,6 +1,9 @@
 <template>
   <div class="overlay" @click.prevent="close" v-show="isShow">
     <div class="calc-box" @click.stop>
+      <h2>
+        {{player}}
+      </h2>
       <div class="result" :class="{ red: sign, blue: !sign }">
         {{ sign ? "+" : "\u2212" }}{{ result }}
       </div>
@@ -29,6 +32,10 @@ export default {
     isShow: {
       type: Boolean,
       default: false,
+    },
+    player: {
+      type: String,
+      default: "",
     },
   },
   data() {
@@ -73,20 +80,20 @@ export default {
     },
   },
   mounted() {
-    window.addEventListener('keydown', (e) => {
-      if (e.key === 'Shift') {
+    window.addEventListener("keydown", (e) => {
+      if (e.key === "Shift") {
         this.updateStep = 100;
       }
     });
-    window.addEventListener('keyup', (e) => {
+    window.addEventListener("keyup", (e) => {
       console.log(e.key);
-      if (e.key === 'Shift') {
+      if (e.key === "Shift") {
         this.updateStep = 1000;
       }
-      if (e.key === 'ArrowUp') {
+      if (e.key === "ArrowUp") {
         this.result = Math.max(this.result + this.updateStep, 0);
       }
-      if (e.key === 'ArrowDown') {
+      if (e.key === "ArrowDown") {
         this.result = Math.max(this.result - this.updateStep, 0);
       }
       if (e.key === "Enter") {
@@ -96,7 +103,7 @@ export default {
         this.close();
       }
     });
-  }
+  },
 };
 </script>
 <style>
