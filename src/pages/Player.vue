@@ -1,14 +1,14 @@
 <template>
   <div>
     <video
-      v-if="isFoundOtherPlayerRTCId"
+      v-show="isFoundOtherPlayerRTCId"
       id="their-video"
       height="100%"
       autoplay
       :muted="!!mute"
       playsinline
     ></video>
-    <h1 v-else>対戦相手がまだいません</h1>
+    <h1 v-show="!isFoundOtherPlayerRTCId">対戦相手がまだいません</h1>
     <button v-if="!mute" @click="mute = true">ミュート</button>
     <button v-else @click="mute = false">ミュート解除</button>
     <button @click="openCalc(player)">自分</button>
@@ -57,7 +57,6 @@ export default {
     },
     onGetMediaConnection(mediaConnection) {
       mediaConnection.on("stream", stream => {
-        console.log({ stream });
         const videoElm = document.getElementById("their-video");
         videoElm.srcObject = stream;
         videoElm.play();
@@ -65,6 +64,8 @@ export default {
     },
     onGetStream(stream) {
       const videoElm = document.getElementById("their-video");
+      console.log({ stream });
+
       videoElm.srcObject = stream;
       videoElm.play();
     },
@@ -104,6 +105,12 @@ export default {
   watch: {
     playerRTCIds(newValue) {
       console.log(newValue);
+      let otherPlayerId = newValue[this.otherPlayer];
+      if (otherPlayerId) {
+        if (this.room.remoteStreams[otherPlayerId]) {
+          this.onGetStream(this.room.remoteStreams[otherPlayerId]);
+        }
+      }
     }
   }
 };
