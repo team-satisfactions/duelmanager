@@ -93,6 +93,8 @@ import CoinToss from "../components/CoinToss.vue";
 import { createNamespacedHelpers } from "vuex";
 import Modal from "@/components/Modal";
 import EditHistory from "@/components/EditHistory";
+import duel from "@/mixins/duel";
+import router from "@/router";
 const { mapGetters, mapActions, mapState } = createNamespacedHelpers("life");
 
 export default {
@@ -118,15 +120,6 @@ export default {
     Calculator
   },
   mounted() {
-    const hash = location.hash.slice(1);
-    if (!hash) {
-      this.createNewDuel().then(() => {
-        location.hash = "#" + this.$store.state.duel.duelId;
-      });
-    } else {
-      this.enterExistDuel(hash);
-    }
-    this.url = window.location;
   },
   computed: {
     ...mapState(["playerNames"]),
@@ -134,12 +127,13 @@ export default {
   },
   methods: {
     ...mapActions([
-      "createNewDuel",
       "addChangeHistory",
-      "enterExistDuel",
       "resetHistory",
       "setPlayerName"
     ]),
+    async onCreatedNewDuel(duelId) {
+      return router.push(`/duels/${duelId}/lp`);
+    },
     openCalc(player) {
       console.log({ player });
       this.calcPlayer = player;
@@ -223,7 +217,8 @@ export default {
       }
       this.viewLifeCalc();
     }
-  }
+  },
+  mixins: [duel],
 };
 </script>
 

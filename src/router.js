@@ -7,8 +7,10 @@ Vue.use(VueRouter);
 
 const routes = [
   { path: "/", component: LifePoint},
-  { path: "/lp", component: LifePoint},
-  { path: "/player/:num", component: Player},
+  { path: "/duels/lp", component: LifePoint},
+  { path: "/duels/:duelId/lp", component: LifePoint},
+  { path: "/duels/players/:num", component: Player},
+  { path: "/duels/:duelId/players/:num", component: Player},
 ];
 
 export default new VueRouter ({
