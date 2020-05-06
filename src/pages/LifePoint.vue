@@ -1,21 +1,10 @@
 <template>
   <div id="app">
-    <audio id="life" preload="auto" ref="life-sound">
-    </audio>
+    <audio id="life" preload="auto" ref="life-sound"></audio>
     <div class="header">
-      <div
-        class="logo-wrapper"
-        @click="resetHistory()">
-        <img
-          class="logo"
-          alt="Vue logo"
-          src="../assets/logo.png"
-        />
-        <img
-          class="logo-mini"
-          alt="Vue logo"
-          src="../assets/logo-mini.png"
-        />
+      <div class="logo-wrapper" @click="resetHistory()">
+        <img class="logo" alt="Vue logo" src="../assets/logo.png" />
+        <img class="logo-mini" alt="Vue logo" src="../assets/logo-mini.png" />
       </div>
       <img
         class="logo"
@@ -119,14 +108,14 @@ export default {
       showPlayerNameModal: false,
       editingName: "",
       showEditHistoryModal: false,
-      url: '',
+      url: ""
     };
   },
   components: {
     Modal,
     EditHistory,
     CoinToss,
-    Calculator,
+    Calculator
   },
   mounted() {
     const hash = location.hash.slice(1);
@@ -137,11 +126,11 @@ export default {
     } else {
       this.enterExistDuel(hash);
     }
-    this.url = window.location
+    this.url = window.location;
   },
   computed: {
     ...mapState(["playerNames"]),
-    ...mapGetters(["lifes"]),
+    ...mapGetters(["lifes"])
   },
   methods: {
     ...mapActions([
@@ -149,7 +138,7 @@ export default {
       "addChangeHistory",
       "enterExistDuel",
       "resetHistory",
-      "setPlayerName",
+      "setPlayerName"
     ]),
     openCalc(player) {
       console.log({ player });
@@ -180,10 +169,10 @@ export default {
       let newLifes = this.lifes;
 
       let effectPromises = Object.keys(this.viewLifes_)
-        .filter((key) => {
+        .filter(key => {
           return newLifes[key] !== this.viewLifes_[key];
         })
-        .map((key) => {
+        .map(key => {
           let player = key;
           let newValue = newLifes[player];
           let nowValue = () => this.viewLifes_[player];
@@ -192,14 +181,14 @@ export default {
           let time = 900;
           let dt = 50;
           let v = Math.floor(newValue - oldValue);
-          let myLogistic = (x) => 0.5 * (Math.tanh(Math.PI * (2 * x - 1)) + 1);
+          let myLogistic = x => 0.5 * (Math.tanh(Math.PI * (2 * x - 1)) + 1);
 
           //if (this.$refs["life-sound"]) {
           //  // TODO(higumachan): SoundManager的なやつを作る
           //  this.$refs["life-sound"].play();
           //}
 
-          return new Promise((resolve) => {
+          return new Promise(resolve => {
             let startTime = +new Date();
 
             let interval = () => {
@@ -224,7 +213,7 @@ export default {
 
       this.isRealLife = true;
       this.viewLifes_ = newLifes;
-    },
+    }
   },
   watch: {
     lifes(newLifes) {
@@ -233,8 +222,8 @@ export default {
         return;
       }
       this.viewLifeCalc();
-    },
-  },
+    }
+  }
 };
 </script>
 
@@ -244,23 +233,23 @@ body {
   margin: 0px;
 }
 .header {
-  display:flex;
-  justify-content:center;
+  display: flex;
+  justify-content: center;
 }
 .logo-wrapper {
-  position:relative;
+  position: relative;
 }
 .logo {
   height: 25vh;
 }
 .logo-mini {
   position: absolute;
-  height: 25vh ;
+  height: 25vh;
   left: 0;
-  filter: drop-shadow(2px 2px 1px rgba(0,0,0,0.8));
+  filter: drop-shadow(2px 2px 1px rgba(0, 0, 0, 0.8));
 }
 .logo-mini:active {
-  filter: drop-shadow(0px 0px 1px rgba(0,0,0,1));
+  filter: drop-shadow(0px 0px 1px rgba(0, 0, 0, 1));
 }
 .life-box {
   position: absolute;
@@ -275,10 +264,10 @@ body {
   font-size: 86px;
 }
 .url-head {
-  margin-bottom:0px;
+  margin-bottom: 0px;
 }
 .url-text {
-  margin-top:0px;
+  margin-top: 0px;
 }
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;

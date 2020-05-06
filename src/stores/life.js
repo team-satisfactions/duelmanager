@@ -99,13 +99,18 @@ export default {
         commit("initialize2Players");
         const hp = db.collection("histories").add(state.histories);
         const pp = db.collection("playerNames").add(state.playerNames);
-        return Promise.all([hp, pp]).then(
-          ([historiesDocRef, playersDocRef]) => {
+        const pri = db.collection("playerRTCIds").add({
+          player1: null,
+          player2: null,
+        });
+        return Promise.all([hp, pp, pri]).then(
+          ([historiesDocRef, playersDocRef, playerRTDCIdsDocRef]) => {
             return db
               .collection("duels")
               .add({
                 histories: historiesDocRef,
                 playerNames: playersDocRef,
+                playerRTCIds: playerRTDCIdsDocRef,
               })
               .then((docRef) => {
                 getters.players.forEach((player) => {

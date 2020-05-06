@@ -1,5 +1,5 @@
 import Vue from "vue";
-import App from "./pages/LifePoint.vue";
+import App from "./App";
 import { store } from "./store.js";
 import "./plugins/firebase";
 import { firestorePlugin } from "vuefire";
