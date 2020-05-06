@@ -12,7 +12,7 @@
     <button v-if="!mute" @click="mute = true">ミュート</button>
     <button v-else @click="mute = false">ミュート解除</button>
     <button @click="openCalc(player)">自分</button>
-    <button @click="openCalc(otherPlayer)">相手</button>
+    <button @click="openCalc(rival)">相手</button>
     <Calculator :isShow.sync="isShowCalc" @result="calcLife"></Calculator>
   </div>
 </template>
@@ -69,6 +69,11 @@ export default {
       videoElm.srcObject = stream;
       videoElm.play();
     },
+    onPeerJoin(peerId) {
+      if (this.playerRTCIds[this.rival] === peerId) {
+        this.onGetStream(this.room.remoteStreams[peerId]);
+      }
+    },
     calcLife(value) {
       const player = this.calcPlayer;
       this.addChangeHistory([player, value]);
@@ -86,11 +91,11 @@ export default {
     player() {
       return "player" + this.$route.params.num;
     },
-    otherPlayer() {
+    rival() {
       return "player" + (((parseInt(this.$route.params.num) - 1 + 1) % 2) + 1);
     },
     isFoundOtherPlayerRTCId() {
-      return this.playerRTCIds[this.otherPlayer] !== null;
+      return this.playerRTCIds[this.rival] !== null;
     },
     roomId() {
       return this.duelId;
@@ -105,7 +110,7 @@ export default {
   watch: {
     playerRTCIds(newValue) {
       console.log(newValue);
-      let otherPlayerId = newValue[this.otherPlayer];
+      let otherPlayerId = newValue[this.rival];
       if (otherPlayerId) {
         if (this.room.remoteStreams[otherPlayerId]) {
           this.onGetStream(this.room.remoteStreams[otherPlayerId]);
