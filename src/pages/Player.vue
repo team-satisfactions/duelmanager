@@ -29,9 +29,8 @@ const {
 } = createNamespacedHelpers("duel");
 const {
   mapActions: mapLifeActions,
-  mapGetters: mapLifeGetters,
+  mapGetters: mapLifeGetters
 } = createNamespacedHelpers("life");
-
 
 export default {
   name: "Player",
@@ -40,16 +39,12 @@ export default {
     return {
       mute: true,
       isShowCalc: false,
-      calcPlayer: "",
+      calcPlayer: ""
     };
   },
   methods: {
     ...mapDuelActions(["setRTCId", "bindPlayerRTCIds"]),
-    ...mapLifeActions([
-      "addChangeHistory",
-      "resetHistory",
-      "setPlayerName"
-    ]),
+    ...mapLifeActions(["addChangeHistory", "resetHistory", "setPlayerName"]),
     onPeerOpen() {
       console.log("onp");
       console.log(this.peer.id);
@@ -62,7 +57,7 @@ export default {
     },
     onGetMediaConnection(mediaConnection) {
       mediaConnection.on("stream", stream => {
-        console.log({stream});
+        console.log({ stream });
         const videoElm = document.getElementById("their-video");
         videoElm.srcObject = stream;
         videoElm.play();
@@ -84,7 +79,7 @@ export default {
     },
     onCreatedNewDuel(duelId) {
       return router.push(`/duels/${duelId}/players/${this.$route.params.num}`);
-    },
+    }
   },
   computed: {
     player() {
@@ -103,7 +98,7 @@ export default {
     ...mapDuelState(["playerRTCIds", "duelId"])
   },
   components: {
-    Calculator,
+    Calculator
   },
   mounted() {},
   watch: {

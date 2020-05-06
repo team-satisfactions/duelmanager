@@ -1,5 +1,9 @@
 import Peer from "skyway-js";
 import {skywayApiKey} from "../../config/skyway-config";
+import {createNamespacedHelpers} from "vuex";
+
+const { mapActions } = createNamespacedHelpers("duel");
+
 
 export default {
   data() {
@@ -22,6 +26,7 @@ export default {
     },
     onGetUserMediaStream(stream) { // eslint-disable-line
     },
+    ...mapActions(["waitInitialized"]),
   },
   computed: {
     roomId() {
@@ -43,8 +48,8 @@ export default {
       key: skywayApiKey,
       debug: 3
     });
-    this.peer.on('open', () => {
-
+    this.peer.on('open', async () => {
+      await this.waitInitialized();
       this.room = this.peer.joinRoom(this.roomId, {
         mode: "sfu",
         stream: this.localStream,
