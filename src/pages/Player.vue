@@ -46,6 +46,8 @@ export default {
       calcPlayer: "",
       streamHeight: 0,
       streamWidth: 0,
+      rivalStream: null,
+      audienceStreams: [],
     };
   },
   methods: {
@@ -61,24 +63,37 @@ export default {
         });
       });
     },
-    onGetMediaConnection(mediaConnection) {
-      mediaConnection.on("stream", stream => {
-        const videoElm = document.getElementById("their-video");
-        videoElm.srcObject = stream;
-        videoElm.play();
-      });
+    splitStreams() {
+      console.log({remoteStreams: this.room.remoteStreams});
+      const audienceStreams = [];
+      for (const key in this.room.remoteStreams) {
+        const stream = this.room.remoteStreams[key];
+        console.log({stream})
+        const peerId = stream.peerId;
+        if (this.rivalRTCId === peerId) {
+          this.rivalStream = stream;
+          const videoElm = document.getElementById("their-video");
+          videoElm.srcObject = this.rivalStream;
+          videoElm.play();
+        } else {
+          audienceStreams.push(stream);
+        }
+        this.audienceStreams = audienceStreams;
+      }
     },
-    onGetStream(stream) {
+
+    onGetStream() {
+      this.splitStreams();
+    },
+    onGetRivalStream(stream) {
       const videoElm = document.getElementById("their-video");
       console.log({ stream });
 
       videoElm.srcObject = stream;
       videoElm.play();
     },
-    onPeerJoin(peerId) {
-      if (this.playerRTCIds[this.rival] === peerId) {
-        this.onGetStream(this.room.remoteStreams[peerId]);
-      }
+    onPeerJoin() {
+      this.splitStreams();
     },
     onPeerLeave(peerId) {
       if (this.playerRTCIds[this.rival] === peerId) {
@@ -87,6 +102,7 @@ export default {
           RTCId: null
         });
       }
+      this.splitStreams();
     },
     calcLife(value) {
       const player = this.calcPlayer;
@@ -107,6 +123,9 @@ export default {
     },
     rival() {
       return "player" + (((parseInt(this.$route.params.num) - 1 + 1) % 2) + 1);
+    },
+    rivalRTCId() {
+      return this.playerRTCIds[this.rival];
     },
     isFoundOtherPlayerRTCId() {
       return this.playerRTCIds[this.rival] !== null;
@@ -130,13 +149,9 @@ export default {
   watch: {
     playerRTCIds(newValue) {
       console.log(newValue);
-      let otherPlayerId = newValue[this.rival];
-      if (otherPlayerId) {
-        if (this.room.remoteStreams[otherPlayerId]) {
-          this.onGetStream(this.room.remoteStreams[otherPlayerId]);
-        }
-      }
-    }
+      this.splitStreams();
+    },
+
   }
 };
 </script>
