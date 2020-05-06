@@ -18,8 +18,8 @@ export default {
   methods: {
     voiceRecognition(){
       //var grammar = '#JSGF V1.0 JIS;language ja; grammar monstars; public <monstars> = "手札から" | "六花精スノードロップ" | "六花のヒトヒラ";'
-      let recognition = new (window.SpeechRecognition || new window.webkitSpeechRecognition)();
-      //var speechRecognitionList = new (window.SpeechGrammarList || new window.webkitSpeechGrammarList)();
+      let recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+      //var speechRecognitionList = new (window.SpeechGrammarList || window.webkitSpeechGrammarList)();
       //speechRecognitionList.addFromString(grammar, 10);
       //recognition.grammars = speechRecognitionList;
       recognition.lang = 'ja-JP';
