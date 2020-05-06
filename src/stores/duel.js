@@ -21,7 +21,8 @@ export default {
     },
   },
   actions: {
-    async getDuel({ state }) {
+    async getDuel({ state, dispatch }) {
+      await dispatch("waitInitialized");
       return db.collection("duels").doc(state.duelId).get();
     },
     async setRTCId({state, dispatch}, {player, RTCId}) {

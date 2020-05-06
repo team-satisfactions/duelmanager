@@ -4,14 +4,13 @@ const { mapActions } = createNamespacedHelpers("life");
 
 export default {
   mounted() {
-    const hash = location.hash.slice(1);
     if (!this.urlDuelId) {
       this.createNewDuel().then(() => {
         //location.hash = "#" + this.$store.state.duel.duelId;
         return this.onCreatedNewDuel(this.$store.state.duel.duelId);
       });
     } else {
-      this.enterExistDuel(hash);
+      this.enterExistDuel(this.urlDuelId);
     }
     this.url = window.location;
   },

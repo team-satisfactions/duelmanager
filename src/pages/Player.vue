@@ -19,10 +19,10 @@
 
 <script>
 import Calculator from "../components/Calculator.vue";
-import skywayManager from "@/mixins/skywayManager";
 import { createNamespacedHelpers } from "vuex";
 import duel from "@/mixins/duel";
 import router from "@/router";
+import skywayManagerRoom from "@/mixins/skywayManagerRoom";
 const {
   mapActions: mapDuelActions,
   mapState: mapDuelState
@@ -35,7 +35,7 @@ const {
 
 export default {
   name: "Player",
-  mixins: [duel, skywayManager],
+  mixins: [duel, skywayManagerRoom],
   data() {
     return {
       mute: true,
@@ -62,14 +62,16 @@ export default {
     },
     onGetMediaConnection(mediaConnection) {
       mediaConnection.on("stream", stream => {
+        console.log({stream});
         const videoElm = document.getElementById("their-video");
         videoElm.srcObject = stream;
         videoElm.play();
       });
     },
-    onPeerCall(mediaConnection) {
-      mediaConnection.answer(this.localStream);
-      this.onGetMediaConnection(mediaConnection);
+    onGetStream(stream) {
+      const videoElm = document.getElementById("their-video");
+      videoElm.srcObject = stream;
+      videoElm.play();
     },
     calcLife(value) {
       const player = this.calcPlayer;
@@ -94,8 +96,11 @@ export default {
     isFoundOtherPlayerRTCId() {
       return this.playerRTCIds[this.otherPlayer] !== null;
     },
+    roomId() {
+      return this.duelId;
+    },
     ...mapLifeGetters(["lifes"]),
-    ...mapDuelState(["playerRTCIds"])
+    ...mapDuelState(["playerRTCIds", "duelId"])
   },
   components: {
     Calculator,
@@ -103,10 +108,7 @@ export default {
   mounted() {},
   watch: {
     playerRTCIds(newValue) {
-      const theirId = newValue[this.otherPlayer];
-      if (this.player === "player1" && theirId !== null) {
-        this.makeCall(theirId);
-      }
+      console.log(newValue);
     }
   }
 };
