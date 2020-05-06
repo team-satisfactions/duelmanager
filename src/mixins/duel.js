@@ -17,7 +17,8 @@ export default {
   },
   methods: {
     ...mapActions(["createNewDuel", "enterExistDuel"]),
-    async onCreatedNewDuel(duelId) {  // eslint-disable-line
+    // eslint-disable-next-line
+    async onCreatedNewDuel(duelId) {
       console.error("not implemented");
     }
   },
