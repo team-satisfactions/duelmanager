@@ -55,6 +55,7 @@ export default {
         stream: this.localStream,
       });
       this.room.on('peerJoin', this.onPeerJoin);
+      this.room.on('peerLeave', this.onPeerLeave);
       this.room.on('stream', this.onGetStream);
       this.onPeerOpen();
     });

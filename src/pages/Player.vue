@@ -74,6 +74,14 @@ export default {
         this.onGetStream(this.room.remoteStreams[peerId]);
       }
     },
+    onPeerLeave(peerId) {
+      if (this.playerRTCIds[this.rival] === peerId) {
+        this.setRTCId({
+          player: this.rival,
+          RTCId: null,
+        });
+      }
+    },
     calcLife(value) {
       const player = this.calcPlayer;
       this.addChangeHistory([player, value]);
