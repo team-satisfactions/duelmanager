@@ -1,7 +1,6 @@
-import {createNamespacedHelpers} from "vuex";
+import { createNamespacedHelpers } from "vuex";
 
-const { mapActions, } = createNamespacedHelpers("life");
-
+const { mapActions } = createNamespacedHelpers("life");
 
 export default {
   mounted() {
@@ -17,11 +16,8 @@ export default {
     this.url = window.location;
   },
   methods: {
-    ...mapActions([
-      "createNewDuel",
-      "enterExistDuel",
-    ]),
-    async onCreatedNewDuel(duelId) { // eslint-disable-line
+    ...mapActions(["createNewDuel", "enterExistDuel"]),
+    async onCreatedNewDuel(duelId) {  // eslint-disable-line
       console.error("not implemented");
     }
   },
