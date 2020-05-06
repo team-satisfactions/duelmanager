@@ -8,7 +8,7 @@
     <p class="voice-text">
       <span v-for="(text,i) in logTexts" :key="i">
         &nbsp;
-        <a :href="'https://www.google.co.jp/search?sitesearch=yugioh-wiki.net&domains=yugioh-wiki.net&q=' + text">{{text}}</a>
+        <a target="_blank" :href="'https://www.google.co.jp/search?sitesearch=yugioh-wiki.net&domains=yugioh-wiki.net&q=' + text">{{text}}</a>
         &nbsp;
       </span>
     </p>
