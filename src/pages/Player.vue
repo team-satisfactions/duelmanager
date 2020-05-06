@@ -5,10 +5,12 @@
       id="their-video"
       height="100%"
       autoplay
-      muted
+      :muted="!!mute"
       playsinline
     ></video>
     <h1 v-else>対戦相手がまだいません</h1>
+    <button v-if="!mute" @click="mute = true">ミュート</button>
+    <button v-else @click="mute = false">ミュート解除</button>
   </div>
 </template>
 
@@ -24,6 +26,11 @@ const {
 export default {
   name: "Player",
   mixins: [duel, skywayManager],
+  data() {
+    return {
+      mute: true,
+    };
+  },
   methods: {
     ...mapDuelActions(["setRTCId", "bindPlayerRTCIds"]),
     onPeerOpen() {
