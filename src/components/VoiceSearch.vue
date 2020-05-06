@@ -5,13 +5,9 @@
       <button v-else               @click="voiceRecognitionOn">音声認識 開始</button>
       <div>Voice: {{nowText}}</div>
     </div>
-    <p class="voice-text">
-      <span v-for="(text,i) in logTexts" :key="i">
-        &nbsp;
-        <a target="_blank" :href="'https://www.google.co.jp/search?sitesearch=yugioh-wiki.net&domains=yugioh-wiki.net&q=' + text">{{text}}</a>
-        &nbsp;
-      </span>
-    </p>
+    <div class="voice-text" v-for="(text,i) in logTexts" :key="i">
+      <a target="_blank" :href="'https://www.google.co.jp/search?sitesearch=yugioh-wiki.net&domains=yugioh-wiki.net&q=' + text">{{text}}</a><br/>
+    </div>
   </div>
 </template>
 <script>
@@ -45,7 +41,7 @@ export default {
       recognition.onend = () => {
         console.log('end')
         if (this.nowText != ''){
-          this.logTexts = [...this.logTexts,this.nowText]
+          this.logTexts = [this.nowText,...this.logTexts].slice(0,10)
           this.nowText = ''
         }
 
@@ -78,8 +74,11 @@ export default {
   justify-content: end;
   max-width: 40vw;
   width: 100%;
+  border: 1px grey solid;
 }
 .voice-text {
   max-width: 40vw;
+  width: 100%;
+  border: 1px rgba(255, 0, 0, 0.4) solid;
 }
 </style>
