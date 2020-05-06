@@ -1,13 +1,17 @@
 <template>
   <div>
-    <video
-      v-show="isFoundOtherPlayerRTCId"
-      id="their-video"
-      height="100%"
-      autoplay
-      :muted="!!mute"
-      playsinline
-    ></video>
+    <div class="warpper">
+      <video
+              v-show="isFoundOtherPlayerRTCId"
+              id="their-video"
+              :height="height + 'px'"
+              :width="width + 'px'"
+              autoplay
+              :muted="!!mute"
+              playsinline
+      ></video>
+    </div>
+
     <h1 v-show="!isFoundOtherPlayerRTCId">対戦相手がまだいません</h1>
     <button v-if="!mute" @click="mute = true">ミュート</button>
     <button v-else @click="mute = false">ミュート解除</button>
@@ -39,7 +43,9 @@ export default {
     return {
       mute: true,
       isShowCalc: false,
-      calcPlayer: ""
+      calcPlayer: "",
+      streamHeight: 0,
+      streamWidth: 0,
     };
   },
   methods: {
@@ -78,7 +84,7 @@ export default {
       if (this.playerRTCIds[this.rival] === peerId) {
         this.setRTCId({
           player: this.rival,
-          RTCId: null,
+          RTCId: null
         });
       }
     },
@@ -107,6 +113,12 @@ export default {
     },
     roomId() {
       return this.duelId;
+    },
+    width() {
+      return document.body.clientWidth;
+    },
+    height() {
+      return document.body.clientHeight;
     },
     ...mapLifeGetters(["lifes"]),
     ...mapDuelState(["playerRTCIds", "duelId"])
