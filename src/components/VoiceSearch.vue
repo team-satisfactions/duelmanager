@@ -6,7 +6,7 @@
       <div v-if="notSupport">音声の受信のみ(サポートされていないブラウザです)</div>
       <div v-else>Voice: {{nowText}}</div>
     </div>
-    <div class="voice-text" v-for="(log,i) in voicelogs" :key="i">
+    <div class="voice-text" v-for="(log,i) in voiceLogsGetter()" :key="i">
       <a
        target="_blank"
        :href="'https://www.google.co.jp/search?sitesearch=yugioh-wiki.net&domains=yugioh-wiki.net&q=' + log.text"
@@ -41,12 +41,17 @@ export default {
       "initializeVoiceLog",
       "updateVoiceLogs"
     ]),
+    voiceLogsGetter(){
+      return Array.isArray(this.voicelogs) ? this.voicelogs : []
+    },
     async voiceRecognitionOn(){
       await this.initializeVoiceLog()
       this.isRecognition = true
       const speechRecognition = window.SpeechRecognition||window.webkitSpeechRecognition
+
       if(speechRecognition == null){
         this.notSupport = true
+        return
       }
 
       this.recognition = new speechRecognition();
@@ -83,6 +88,7 @@ export default {
     },
     voiceRecognitionOff(){
       this.isRecognition = false
+      if(this.notSupport){ return }
       this.recognition.stop();
     },
   }
