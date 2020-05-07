@@ -3,6 +3,7 @@ import Vuex from "vuex";
 import life from "./stores/life";
 import duel from "./stores/duel";
 import coin from "./stores/coin";
+import voicelog from "./stores/voicelog";
 import { vuexfireMutations } from "vuexfire";
 
 Vue.use(Vuex);
@@ -13,5 +14,6 @@ export const store = new Vuex.Store({
     life,
     duel,
     coin,
+    voicelog,
   },
 });

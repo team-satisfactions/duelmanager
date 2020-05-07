@@ -3,27 +3,53 @@
     <div class="voice-header">
       <button v-if="isRecognition" @click="voiceRecognitionOff">音声認識 停止</button>
       <button v-else               @click="voiceRecognitionOn">音声認識 開始</button>
-      <div>Voice: {{nowText}}</div>
+      <div v-if="notSupport">音声の受信のみ(サポートされていないブラウザです)</div>
+      <div v-else>Voice: {{nowText}}</div>
     </div>
-    <div class="voice-text" v-for="(text,i) in logTexts" :key="i">
-      <a target="_blank" :href="'https://www.google.co.jp/search?sitesearch=yugioh-wiki.net&domains=yugioh-wiki.net&q=' + text">{{text}}</a><br/>
+    <div class="voice-text" v-for="(log,i) in voicelogs" :key="i">
+      <a
+       target="_blank"
+       :href="'https://www.google.co.jp/search?sitesearch=yugioh-wiki.net&domains=yugioh-wiki.net&q=' + log.text"
+      >
+      {{log.text}}
+      </a>
+      <br/>
     </div>
   </div>
 </template>
 <script>
+import { createNamespacedHelpers } from "vuex";
+const { mapActions, mapState } = createNamespacedHelpers("voicelog");
+
 export default {
   data(){
     return {
       recognition : null,
       isRecognition: false,
+      notSupport: false,
       nowText : '',
       logTexts : []
     }
   },
+  computed: {
+    ...mapState([
+      "voicelogs"
+    ]),
+  },
   methods: {
-    voiceRecognitionOn(){
+    ...mapActions([
+      "initializeVoiceLog",
+      "updateVoiceLogs"
+    ]),
+    async voiceRecognitionOn(){
+      await this.initializeVoiceLog()
       this.isRecognition = true
-      this.recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+      const speechRecognition = window.SpeechRecognition||window.webkitSpeechRecognition
+      if(speechRecognition == null){
+        this.notSupport = true
+      }
+
+      this.recognition = new speechRecognition();
       let recognition = this.recognition
       //var grammar = '#JSGF V1.0 JIS;language ja; grammar monstars; public <monstars> = "手札から" | "六花精スノードロップ" | "六花のヒトヒラ";'
       //var speechRecognitionList = new (window.SpeechGrammarList || window.webkitSpeechGrammarList)();
@@ -41,7 +67,7 @@ export default {
       recognition.onend = () => {
         console.log('end')
         if (this.nowText != ''){
-          this.logTexts = [this.nowText,...this.logTexts].slice(0,10)
+          this.updateVoiceLogs(this.nowText)
           this.nowText = ''
         }
 
@@ -58,7 +84,7 @@ export default {
     voiceRecognitionOff(){
       this.isRecognition = false
       this.recognition.stop();
-    }
+    },
   }
 }
 </script>
@@ -71,7 +97,7 @@ export default {
 .voice-header {
   display: flex;
   align-items: baseline;
-  justify-content: end;
+  justify-content: start;
   max-width: 40vw;
   width: 100%;
   border: 1px grey solid;
