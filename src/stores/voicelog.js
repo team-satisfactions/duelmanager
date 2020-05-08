@@ -1,3 +1,4 @@
+import firebase from "firebase";
 import { firestoreAction } from "vuexfire";
 
 export default {
@@ -20,7 +21,7 @@ export default {
       const duel = rootGetters['duel/duelRef']
       const voicelogs_doc = await duel.collection("voicelogs")
       await voicelogs_doc.add({
-        time: +Date.now(),
+        time: firebase.firestore.Timestamp.now(),
         text: log
       })
     },
