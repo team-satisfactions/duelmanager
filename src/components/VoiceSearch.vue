@@ -68,17 +68,20 @@ export default {
       };
       recognition.onstart = () => {
         console.log('start')
+        this.nowText = ''
       };
       recognition.onend = () => {
         console.log('end')
-        if (this.nowText != ''){
-          this.updateVoiceLogs(this.nowText)
-          this.nowText = ''
-        }
+        const endText = this.nowText
 
         if(this.isRecognition == true) {
           recognition.start();
         }
+
+        if (this.nowText != ''){
+          this.updateVoiceLogs(endText)
+        }
+
       }
       recognition.onresult = (event) => {
         console.log(event)
