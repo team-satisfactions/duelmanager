@@ -96,12 +96,14 @@
       :player="editingPlayer"
       @close="showEditHistoryModal = false"
     ></EditHistory>
+    <VoiceSearch></VoiceSearch>
   </div>
 </template>
 
 <script>
 import Calculator from "./components/Calculator.vue";
 import CoinToss from "./components/CoinToss.vue";
+import VoiceSearch from "./components/VoiceSearch.vue";
 import { createNamespacedHelpers } from "vuex";
 import Modal from "@/components/Modal";
 import EditHistory from "@/components/EditHistory";
@@ -128,6 +130,7 @@ export default {
     EditHistory,
     CoinToss,
     Calculator,
+    VoiceSearch,
   },
   mounted() {
     const hash = location.hash.slice(1);
