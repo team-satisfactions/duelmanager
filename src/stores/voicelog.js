@@ -2,7 +2,6 @@ import firebase from "firebase";
 import { firestoreAction } from "vuexfire";
 
 export default {
-  namespaced: true,
   state: {
     voicelogs: {},
   },
