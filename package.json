@@ -7,7 +7,7 @@
     "build": "vue-cli-service build",
     "test:unit": "vue-cli-service test:unit",
     "lint": "vue-cli-service lint",
-    "test": "jest"
+    "test": "jest --detectOpenHandles --forceExit"
   },
   "dependencies": {
     "chancer": "^2.0.2",
@@ -32,7 +32,9 @@
     "eslint": "^6.7.2",
     "eslint-plugin-vue": "^6.1.2",
     "flush-promises": "^1.0.2",
-    "jest": "^25.2.7",
+    "jest": "^25.5.4",
+    "jest-puppeteer": "^4.4.0",
+    "puppeteer": "^3.1.0",
     "vue-template-compiler": "^2.6.11"
   },
   "eslintConfig": {
@@ -59,6 +61,12 @@
         }
       }
     ]
+  },
+  "jest": {
+    "projects": [
+      "jest.unit.config.js",
+      "jest.e2e.config.js"
+     ]
   },
   "browserslist": [
     "> 1%",
